@@ -53,7 +53,7 @@ class SCCalenderRepository {
 
         val today = Calendar.getInstance()
         val nowYear = today.get(Calendar.YEAR)
-        val nowMonth = today.get(Calendar.MONTH)
+        val nowMonth = today.get(Calendar.MONTH) + 1
 
         // 表示可能な年月情報を生成し保持
         setSelectYearAndMonth(startYear = START_YEAR, endYear = nowYear)
@@ -61,8 +61,6 @@ class SCCalenderRepository {
         moveYearAndMonthCalendar(year = nowYear, month = nowMonth)
         // 週の始まりに設定する曜日を指定
         setFirstWeek(initWeek)
-        // カレンダー更新
-        updateCalendar()
     }
 
     /**
@@ -168,9 +166,8 @@ class SCCalenderRepository {
 fun MutableList<DayOfWeek>.moveWeekToFront(week: DayOfWeek) {
     val index = indexOf(week)
     if (index != -1) {
-        val sublist = subList(index, size)
-        sublist.addAll(subList(0, index))
+        val newList = subList(index, size).toMutableList() + subList(0, index)
         clear()
-        addAll(sublist)
+        addAll(newList)
     }
 }
