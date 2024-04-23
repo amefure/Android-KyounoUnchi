@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.amefure.unchilog.R
 import com.amefure.unchilog.Repository.SCCalender.SCCalenderRepository
 import com.amefure.unchilog.View.RecycleViewSetting.PoopCalendarAdapter
+import com.amefure.unchilog.View.RecycleViewSetting.WeekAdapter
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -34,12 +35,23 @@ class PoopCalendarFragment : Fragment() {
 
         GlobalScope.launch {
             sc.currentDates.collect {
-                val recyclerView: RecyclerView = view.findViewById(R.id.main_list)
+                val recyclerView: RecyclerView = view.findViewById(R.id.day_recycle_layout)
                 recyclerView.layoutManager = GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
                 recyclerView.addItemDecoration(
                     DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
                 )
                 recyclerView.adapter = PoopCalendarAdapter(it)
+            }
+        }
+
+        GlobalScope.launch {
+            sc.dayOfWeekList.collect {
+                val recyclerView: RecyclerView = view.findViewById(R.id.week_recycle_layout)
+                recyclerView.layoutManager = GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
+                recyclerView.addItemDecoration(
+                    DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+                )
+                recyclerView.adapter = WeekAdapter(it)
             }
         }
     }

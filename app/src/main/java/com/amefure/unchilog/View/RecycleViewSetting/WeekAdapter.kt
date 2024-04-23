@@ -1,17 +1,21 @@
 package com.amefure.unchilog.View.RecycleViewSetting
 
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
-import com.amefure.unchilog.Model.SCCalender.SCDate
 import com.amefure.unchilog.R
+import com.amefure.unchilog.Repository.SCCalender.shortSymbols
+import java.time.DayOfWeek
 
-class PoopCalendarAdapter(poopList: List<SCDate>) :RecyclerView.Adapter<PoopCalendarAdapter.MainViewHolder>() {
+@RequiresApi(Build.VERSION_CODES.O)
+class WeekAdapter(weekList: List<DayOfWeek>) : RecyclerView.Adapter<WeekAdapter.MainViewHolder>() {
 
-    private val _poopList: MutableList<SCDate> = poopList.toMutableList()
-    override fun getItemCount(): Int = _poopList.size
+    private val _weekList: MutableList<DayOfWeek> = weekList.toMutableList()
+    override fun getItemCount(): Int = _weekList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         return MainViewHolder(
@@ -21,15 +25,12 @@ class PoopCalendarAdapter(poopList: List<SCDate>) :RecyclerView.Adapter<PoopCale
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
-        val scdate = _poopList[position]
+        val week = _weekList[position]
 
-        if (scdate.day != -1) {
-            holder.name.text = scdate.day.toString()
-        }
+        holder.name.text = week.shortSymbols
     }
 
     class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val name: TextView = itemView.findViewById(R.id.user_name)
-        val hobby: TextView = itemView.findViewById(R.id.user_hobby)
     }
 }
