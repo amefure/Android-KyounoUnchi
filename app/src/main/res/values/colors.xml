@@ -2,4 +2,18 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="ex_gray">#E7E7E7</color>
+    <color name="ex_negative">#AF3F32</color>
+    <color name="ex_positive">#6F8EAB</color>
+    <color name="ex_poop_black">#360000</color>
+    <color name="ex_poop_brown">#743423</color>
+    <color name="ex_poop_dark_brown">#654321</color>
+    <color name="ex_poop_grayish_white">#837F7F</color>
+    <color name="ex_poop_green">#524800</color>
+    <color name="ex_poop_red">#920000</color>
+    <color name="ex_poop_yellow">#A27C3B</color>
+    <color name="ex_poop_yellowish_brown">#B8860B</color>
+    <color name="ex_sub">#272863</color>
+    <color name="ex_text">#545454</color>
+    <color name="ex_thema">#FFEB35</color>
 </resources>
