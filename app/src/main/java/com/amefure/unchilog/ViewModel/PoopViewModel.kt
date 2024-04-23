@@ -1,10 +1,12 @@
 package com.amefure.unchilog.ViewModel
 
 import android.app.Application
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.amefure.unchilog.Model.Poop
+import com.amefure.unchilog.Model.Room.Poop
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Date

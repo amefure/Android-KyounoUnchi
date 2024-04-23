@@ -1,7 +1,7 @@
 package com.amefure.unchilog.Repository.Room
 
 import android.content.Context
-import com.amefure.unchilog.Model.Poop
+import com.amefure.unchilog.Model.Room.Poop
 import com.amefure.unchilog.Repository.Room.Database.AppDatabase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable

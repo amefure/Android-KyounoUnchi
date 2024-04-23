@@ -1,4 +1,4 @@
-package com.amefure.unchilog.Model
+package com.amefure.unchilog.Model.Room
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

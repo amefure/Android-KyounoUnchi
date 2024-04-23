@@ -5,8 +5,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.amefure.unchilog.Model.DateConverters
-import com.amefure.unchilog.Model.Poop
+import com.amefure.unchilog.Model.Room.DateConverters
+import com.amefure.unchilog.Model.Room.Poop
 import com.amefure.unchilog.Repository.Room.Dao.PoopDao
 
 

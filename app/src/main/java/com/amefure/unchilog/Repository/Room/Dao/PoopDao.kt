@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.amefure.unchilog.Model.Poop
+import com.amefure.unchilog.Model.Room.Poop
 import io.reactivex.Flowable
 
 @Dao
