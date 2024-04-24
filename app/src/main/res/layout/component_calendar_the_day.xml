@@ -9,17 +9,17 @@
     >
 
     <TextView
-        android:id="@+id/user_name"
+        android:id="@+id/day_label"
         android:textSize="20sp"
-        android:textColor="@android:color/black"
+        android:textColor="@color/ex_text"
         android:textAlignment="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <TextView
-        android:id="@+id/user_hobby"
+        android:id="@+id/poop_count"
         android:textSize="20sp"
-        android:textColor="@android:color/black"
+        android:textColor="@color/ex_text"
         android:textAlignment="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

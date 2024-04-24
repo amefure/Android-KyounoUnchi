@@ -16,7 +16,7 @@ class PoopCalendarAdapter(poopList: List<SCDate>) :RecyclerView.Adapter<PoopCale
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         return MainViewHolder(
             // XMLレイアウトファイルからViewオブジェクトを作成
-            LayoutInflater.from(parent.context).inflate(R.layout.fragment_calendar_the_day, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.component_calendar_the_day, parent, false)
         )
     }
 
@@ -24,12 +24,13 @@ class PoopCalendarAdapter(poopList: List<SCDate>) :RecyclerView.Adapter<PoopCale
         val scdate = _poopList[position]
 
         if (scdate.day != -1) {
-            holder.name.text = scdate.day.toString()
+            holder.day.text = scdate.day.toString()
+            holder.poopCnt.text = 1.toString()
         }
     }
 
     class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val name: TextView = itemView.findViewById(R.id.user_name)
-        val hobby: TextView = itemView.findViewById(R.id.user_hobby)
+        val day: TextView = itemView.findViewById(R.id.day_label)
+        val poopCnt: TextView = itemView.findViewById(R.id.poop_count)
     }
 }

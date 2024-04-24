@@ -20,17 +20,17 @@ class WeekAdapter(weekList: List<DayOfWeek>) : RecyclerView.Adapter<WeekAdapter.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         return MainViewHolder(
             // XMLレイアウトファイルからViewオブジェクトを作成
-            LayoutInflater.from(parent.context).inflate(R.layout.fragment_calendar_the_day, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.component_the_week, parent, false)
         )
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val week = _weekList[position]
 
-        holder.name.text = week.shortSymbols
+        holder.week.text = week.shortSymbols
     }
 
     class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val name: TextView = itemView.findViewById(R.id.user_name)
+        val week: TextView = itemView.findViewById(R.id.week_label)
     }
 }
