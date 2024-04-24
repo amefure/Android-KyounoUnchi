@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.amefure.unchilog.R
 import com.amefure.unchilog.Repository.SCCalender.SCCalenderRepository
 import com.amefure.unchilog.Repository.SCCalender.fullname
+import com.amefure.unchilog.View.Dialog.CustomNotifyDialogFragment
 import com.amefure.unchilog.View.RecycleViewSetting.PoopCalendarAdapter
 import com.amefure.unchilog.View.RecycleViewSetting.WeekAdapter
 import com.amefure.unchilog.ViewModel.PoopViewModel
@@ -57,14 +58,39 @@ class PoopCalendarFragment : Fragment() {
 
         entryPoopButton.setOnClickListener {
             viewModel.insertPoop(createdAt = Date())
+            val dialog = CustomNotifyDialogFragment.newInstance(
+                title = getString(R.string.dialog_title_notice),
+                msg = getString(R.string.dialog_msg_success_entry_poop),
+                showPositive = true,
+                showNegative = false
+            )
+            dialog.show(parentFragmentManager, "SuccessEntryPoopDialog")
         }
 
         forwardMonthButton.setOnClickListener {
             var result = sccalenderRepository.forwardMonth()
+            if (!result) {
+                val dialog = CustomNotifyDialogFragment.newInstance(
+                    title = getString(R.string.dialog_title_notice),
+                    msg = getString(R.string.dialog_msg_failed_calendar_out_range),
+                    showPositive = true,
+                    showNegative = false
+                )
+                dialog.show(parentFragmentManager, "CalendarOutRangeNameDialog")
+            }
         }
 
         backMonthButton.setOnClickListener {
             var result = sccalenderRepository.backMonth()
+            if (!result) {
+                val dialog = CustomNotifyDialogFragment.newInstance(
+                    title = getString(R.string.dialog_title_notice),
+                    msg = getString(R.string.dialog_msg_failed_calendar_out_range),
+                    showPositive = true,
+                    showNegative = false
+                )
+                dialog.show(parentFragmentManager, "CalendarOutRangeNameDialog")
+            }
         }
 
         // 月の日付更新

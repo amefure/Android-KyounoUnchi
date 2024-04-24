@@ -1,6 +1,44 @@
 <resources>
     <string name="app_name">UNCHILOG</string>
 
+    <!-- Dialog -->
+    <string name="dialog_title_notice">お知らせ</string>
+    <string name="dialog_msg_success_entry_poop">うんちの記録を\n登録しました。</string>
+    <string name="dialog_msg_failed_calendar_out_range">カレンダーの表示範囲外です。</string>
+
+    <!-- App Lock Dialog -->
+    <string name="dialog_save_password">パスワードを設定してアプリをロックしました。</string>
+    <string name="dialog_release_password">パスワードをリセットしてアプリのロックを解除しました。</string>
+    <string name="dialog_different_password">パスワードが違います。</string>
+
+    <!-- Setting -->
+    <string name="setting_app_lock">アプリをロックする</string>
+    <string name="setting_app_lock_desc">・アプリにパスワードを設定してロックをかけることができます。</string>
+
+    <string name="setting_link_inquiry">アプリの不具合はこちら</string>
+    <string name="setting_link_terms_of_service">利用規約とプライバシーポリシー</string>
+    <string name="setting_link_desc">・アプリに不具合がございましたら「アプリの不具合はこちら」よりお問い合わせください。</string>
+
+    <!-- AppLock -->
+    <string name="app_lock_password_placeholder">ー</string>
+    <string name="app_lock_password_fill">⚫︎</string>
+    <string name="app_lock_register">登録</string>
+    <string name="app_lock_number0">0</string>
+    <string name="app_lock_number1">1</string>
+    <string name="app_lock_number2">2</string>
+    <string name="app_lock_number3">3</string>
+    <string name="app_lock_number4">4</string>
+    <string name="app_lock_number5">5</string>
+    <string name="app_lock_number6">6</string>
+    <string name="app_lock_number7">7</string>
+    <string name="app_lock_number8">8</string>
+    <string name="app_lock_number9">9</string>
+    <string name="app_lock_number_none">-</string>
+    <string name="app_lock_number_back">←</string>
+
+
+
+
     <!-- Dev  -->
     <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
     <!-- Prd -->
