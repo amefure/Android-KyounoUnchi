@@ -13,6 +13,7 @@ import android.widget.Button
 import android.widget.ImageButton
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
@@ -22,15 +23,20 @@ import com.amefure.unchilog.Repository.SCCalender.SCCalenderRepository
 import com.amefure.unchilog.Repository.SCCalender.fullname
 import com.amefure.unchilog.View.RecycleViewSetting.PoopCalendarAdapter
 import com.amefure.unchilog.View.RecycleViewSetting.WeekAdapter
+import com.amefure.unchilog.ViewModel.PoopViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.Date
 
 @RequiresApi(Build.VERSION_CODES.O)
 class PoopCalendarFragment : Fragment() {
 
-    var sc = SCCalenderRepository()
+    // カレンダーロジックリポジトリ
+    private var sccalenderRepository = SCCalenderRepository()
+
+    private val viewModel: PoopViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,21 +50,26 @@ class PoopCalendarFragment : Fragment() {
         var header: ConstraintLayout = view.findViewById(R.id.include_header)
         var forwardMonthButton: ImageButton = header.findViewById(R.id.forward_month_button)
         var backMonthButton: ImageButton = header.findViewById(R.id.back_month_button)
-
         var yearAndMonthButton: Button = header.findViewById(R.id.year_and_month_button)
 
+        var footer: ConstraintLayout = view.findViewById(R.id.include_footer)
+        var entryPoopButton: ImageButton = footer.findViewById(R.id.entry_poop_button)
+
+        entryPoopButton.setOnClickListener {
+            viewModel.insertPoop(createdAt = Date())
+        }
 
         forwardMonthButton.setOnClickListener {
-            var result = sc.forwardMonth()
+            var result = sccalenderRepository.forwardMonth()
         }
 
         backMonthButton.setOnClickListener {
-            var result = sc.backMonth()
+            var result = sccalenderRepository.backMonth()
         }
 
         // 月の日付更新
         lifecycleScope.launch(Dispatchers.Main) {
-            sc.currentDates.collect {
+            sccalenderRepository.currentDates.collect {
                 val recyclerView: RecyclerView = view.findViewById(R.id.day_recycle_layout)
                 recyclerView.layoutManager = GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
                 recyclerView.addItemDecoration(
@@ -70,7 +81,7 @@ class PoopCalendarFragment : Fragment() {
 
         // 曜日グリッドレイアウト更新
         lifecycleScope.launch(Dispatchers.Main) {
-            sc.dayOfWeekList.collect {
+            sccalenderRepository.dayOfWeekList.collect {
                 val recyclerView: RecyclerView = view.findViewById(R.id.week_recycle_layout)
                 recyclerView.layoutManager = GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
                 recyclerView.addItemDecoration(
@@ -82,11 +93,15 @@ class PoopCalendarFragment : Fragment() {
 
         // ヘッダーの[2024年4月]テキスト更新
         lifecycleScope.launch(Dispatchers.Main) {
-            sc.currentYearAndMonth.collect {
+            sccalenderRepository.currentYearAndMonth.collect {
                 it?.let {
                     yearAndMonthButton.text = it.fullname
                 }
             }
+        }
+
+        viewModel.poops.observe(viewLifecycleOwner) {
+            Log.e("poops", it.toString())
         }
     }
 

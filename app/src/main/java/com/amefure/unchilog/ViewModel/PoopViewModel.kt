@@ -32,7 +32,7 @@ class PoopViewModel (app: Application) : RootViewModel(app) {
     /**
      * 追加
      */
-    public fun insertPoop(color: String, shape: Int, volume: Int, memo: String, createdAt: Date) {
+    public fun insertPoop(color: String = "", shape: Int = 0, volume: Int = 0, memo: String = "", createdAt: Date) {
         viewModelScope.launch(Dispatchers.IO) {
             rootRepository.insertPoop(color, shape, volume, memo, createdAt)
             fetchAllPoops()
