@@ -127,19 +127,32 @@ class SCCalenderRepository {
     }
 
     /// 年月を1つ進める
-    public fun forwardMonth() {
+    public fun forwardMonth(): Boolean {
         currentYearAndMonthIndex += 1
-        val nextYearAndMonth = selectYearAndMonth[currentYearAndMonthIndex]
-        _currentYearAndMonth.value = nextYearAndMonth
-        updateCalendar()
+        val nextYearAndMonth = selectYearAndMonth.getOrNull(currentYearAndMonthIndex)
+        if (nextYearAndMonth == null) {
+            currentYearAndMonthIndex -= 1
+            return  false
+        } else {
+            _currentYearAndMonth.value = nextYearAndMonth
+            updateCalendar()
+            return true
+        }
+
     }
 
     /// 年月を1つ戻す
-    public fun backMonth() {
+    public fun backMonth(): Boolean {
         currentYearAndMonthIndex -= 1
-        val nextYearAndMonth = selectYearAndMonth[currentYearAndMonthIndex]
-        _currentYearAndMonth.value = nextYearAndMonth
-        updateCalendar()
+        val nextYearAndMonth = selectYearAndMonth.getOrNull(currentYearAndMonthIndex)
+        if (nextYearAndMonth == null) {
+            currentYearAndMonthIndex += 1
+            return  false
+        } else {
+            _currentYearAndMonth.value = nextYearAndMonth
+            updateCalendar()
+            return true
+        }
     }
 
     /// 最初に表示したい曜日を設定
@@ -172,6 +185,11 @@ fun MutableList<DayOfWeek>.moveWeekToFront(week: DayOfWeek) {
     }
 }
 
+val YearMonth.fullname: String
+    @RequiresApi(Build.VERSION_CODES.O)
+    get() {
+        return "${year}年${monthValue}月"
+    }
 
 val DayOfWeek.fullSymbols: String
     @RequiresApi(Build.VERSION_CODES.O)
