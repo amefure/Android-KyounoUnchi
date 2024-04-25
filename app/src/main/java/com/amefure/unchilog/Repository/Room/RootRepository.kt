@@ -18,7 +18,7 @@ class RootRepository (context: Context) {
     private val compositeDisposable = CompositeDisposable()
 
     // Poop追加
-    public fun insertPoop(color: String, shape: Int, volume: Int, memo: String, createdAt: Date) {
+    public fun insertPoop(color: Int, shape: Int, volume: Int, memo: String, createdAt: Date) {
         val poop = Poop(
             id = 0,
             color = color,
@@ -31,7 +31,7 @@ class RootRepository (context: Context) {
     }
 
     // Poop更新
-    public fun updatePoop(id: Int, color: String, shape: Int, volume: Int, memo: String, createdAt: Date) {
+    public fun updatePoop(id: Int, color: Int, shape: Int, volume: Int, memo: String, createdAt: Date) {
         val poop = Poop(
             id = id,
             color = color,

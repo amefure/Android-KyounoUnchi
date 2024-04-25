@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingHorizontal="15dp"
     android:background="@color/ex_thema">
 
     <ImageButton
@@ -11,23 +12,24 @@
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="20dp"
         android:layout_height="20dp"
+        android:layout_marginTop="15dp"
         android:contentDescription="leftSideButton"
         android:src="@drawable/button_back"
-        app:layout_constraintEnd_toStartOf="@+id/space"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintEnd_toStartOf="@+id/header_space"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="15dp"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Space
-        android:id="@+id/space"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:id="@+id/header_space"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="15dp"
+        android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@+id/back_month_button"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/left_button"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="15dp"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <ImageButton
@@ -35,16 +37,17 @@
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="20dp"
         android:layout_height="20dp"
+        android:layout_marginTop="15dp"
         android:src="@drawable/button_arrow_back"
-        app:layout_constraintEnd_toStartOf="@+id/year_and_month_button"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/header_title_button"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/space"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="15dp"/>
+        app:layout_constraintStart_toEndOf="@+id/header_space"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <Button
-        android:id="@+id/year_and_month_button"
+        android:id="@+id/header_title_button"
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -62,12 +65,13 @@
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="20dp"
         android:layout_height="20dp"
+        android:layout_marginTop="15dp"
         android:src="@drawable/button_arrow_forward"
+        android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@+id/today_button"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/year_and_month_button"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="15dp"/>
+        app:layout_constraintStart_toEndOf="@+id/header_title_button"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/today_button"
@@ -78,22 +82,24 @@
         android:contentDescription="今日に戻るボタン"
         android:scaleType="fitCenter"
         android:src="@drawable/back_today"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/right_button"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/forward_month_button"
         app:layout_constraintTop_toTopOf="parent" />
+
     <ImageButton
         android:id="@+id/right_button"
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="20dp"
         android:layout_height="20dp"
+        android:layout_marginTop="15dp"
         android:contentDescription="rightSideButton"
-        android:src="@drawable/button_check"
+        android:src="@drawable/button_settings"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/today_button"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="15dp"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

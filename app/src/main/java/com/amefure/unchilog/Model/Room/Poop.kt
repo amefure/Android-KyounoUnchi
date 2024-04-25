@@ -9,7 +9,7 @@ import java.util.Date
 @Entity(tableName = "poop_table")
 data class Poop(
     @PrimaryKey(autoGenerate = true) val id: Int,
-    var color: String,
+    var color: Int,
     var shape: Int,
     var volume: Int,
     var memo: String,

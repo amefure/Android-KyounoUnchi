@@ -2,8 +2,6 @@ package com.amefure.unchilog.View
 
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.Space
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.viewModels
@@ -26,10 +25,7 @@ import com.amefure.unchilog.View.RecycleViewSetting.PoopCalendarAdapter
 import com.amefure.unchilog.View.RecycleViewSetting.WeekAdapter
 import com.amefure.unchilog.ViewModel.PoopViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.util.Date
 
 @RequiresApi(Build.VERSION_CODES.O)
 class PoopCalendarFragment : Fragment() {
@@ -48,23 +44,36 @@ class PoopCalendarFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        var header: ConstraintLayout = view.findViewById(R.id.include_header)
-        var forwardMonthButton: ImageButton = header.findViewById(R.id.forward_month_button)
-        var backMonthButton: ImageButton = header.findViewById(R.id.back_month_button)
-        var yearAndMonthButton: Button = header.findViewById(R.id.year_and_month_button)
+        val header: ConstraintLayout = view.findViewById(R.id.include_header)
+        val forwardMonthButton: ImageButton = header.findViewById(R.id.forward_month_button)
+        val backMonthButton: ImageButton = header.findViewById(R.id.back_month_button)
+        val headerSpace: Space = header.findViewById(R.id.header_space)
+        val yearAndMonthButton: Button = header.findViewById(R.id.header_title_button)
+        val todayButton: ImageButton = header.findViewById(R.id.today_button)
 
-        var footer: ConstraintLayout = view.findViewById(R.id.include_footer)
-        var entryPoopButton: ImageButton = footer.findViewById(R.id.entry_poop_button)
+        headerSpace.visibility = View.VISIBLE
+        forwardMonthButton.visibility = View.VISIBLE
+        backMonthButton.visibility = View.VISIBLE
+        todayButton.visibility = View.VISIBLE
+
+        val footer: ConstraintLayout = view.findViewById(R.id.include_footer)
+        val entryPoopButton: ImageButton = footer.findViewById(R.id.entry_poop_button)
 
         entryPoopButton.setOnClickListener {
-            viewModel.insertPoop(createdAt = Date())
-            val dialog = CustomNotifyDialogFragment.newInstance(
-                title = getString(R.string.dialog_title_notice),
-                msg = getString(R.string.dialog_msg_success_entry_poop),
-                showPositive = true,
-                showNegative = false
-            )
-            dialog.show(parentFragmentManager, "SuccessEntryPoopDialog")
+//            viewModel.insertPoop(createdAt = Date())
+//            val dialog = CustomNotifyDialogFragment.newInstance(
+//                title = getString(R.string.dialog_title_notice),
+//                msg = getString(R.string.dialog_msg_success_entry_poop),
+//                showPositive = true,
+//                showNegative = false
+//            )
+//            dialog.show(parentFragmentManager, "SuccessEntryPoopDialog")
+
+            parentFragmentManager.beginTransaction().apply {
+                add(R.id.main_frame, InputPoopFragment())
+                addToBackStack(null)
+                commit()
+            }
         }
 
         forwardMonthButton.setOnClickListener {
@@ -91,6 +100,10 @@ class PoopCalendarFragment : Fragment() {
                 )
                 dialog.show(parentFragmentManager, "CalendarOutRangeNameDialog")
             }
+        }
+
+        todayButton.setOnClickListener {
+            sccalenderRepository.moveYearAndMonthCalendar(2024,4)
         }
 
         // 月の日付更新
