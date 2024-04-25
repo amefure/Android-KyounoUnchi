@@ -1,6 +1,7 @@
 package com.amefure.unchilog.View
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,26 +9,55 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.SeekBar
+import android.widget.TextView
 import android.widget.TimePicker
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import com.amefure.unchilog.Model.Room.PoopColor
 import com.amefure.unchilog.Model.Room.PoopShape
+import com.amefure.unchilog.Model.Room.PoopVolume
 import com.amefure.unchilog.R
 import com.amefure.unchilog.View.Dialog.CustomNotifyDialogFragment
 import com.amefure.unchilog.ViewModel.PoopViewModel
+import java.util.Calendar
 import java.util.Date
 
 
 class InputPoopFragment : Fragment() {
 
-
-    private var selectTime: PoopColor = PoopColor.UNDEFINED
     private var selectColor: PoopColor = PoopColor.BROWN
     private var selectShape: PoopShape = PoopShape.NORMAL
 
     private val viewModel: PoopViewModel by viewModels()
+
+    // 色
+    private lateinit var selectYellowishBrownButton: View
+    private lateinit var selectYellowButton: View
+    private lateinit var selectBrownButton: View
+    private lateinit var selectDarkBrownButton: View
+    private lateinit var selectBlackButton: View
+    private lateinit var selectGreenButton: View
+    private lateinit var selectRedButton: View
+    private lateinit var selectGrayishWhiteButton: View
+
+    // 形
+    private lateinit var poopShapeKorokoro: ImageButton
+    private lateinit var poopShapeSemiKorokoro: ImageButton
+    private lateinit var poopShapeNormal: ImageButton
+    private lateinit var poopShapeLiquid: ImageButton
+    private lateinit var poopShapeSemiLiquid: ImageButton
+
+    // 量
+    private lateinit var volumeBar: SeekBar
+    private lateinit var volumeLabel: TextView
+
+    // 時間とMEMO
+    private lateinit var timePicker: TimePicker
+    private lateinit var memoText: EditText
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,16 +69,13 @@ class InputPoopFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        timePicker = view.findViewById(R.id.timePicker)
+        memoText = view.findViewById(R.id.memo_edit)
 
         setUpHeaderAction(view)
-        setShapeView(view)
         setColorView(view)
-
-        val timePicker: TimePicker = view.findViewById(R.id.timePicker)
-        // TimePickerの値が変化したときに呼び出されるリスナーを設定
-        timePicker.setOnTimeChangedListener { timePicker, hour, minutes ->
-
-        }
+        setShapeView(view)
+        setVolumeView(view)
     }
 
     /**
@@ -58,8 +85,8 @@ class InputPoopFragment : Fragment() {
      */
     private fun setUpHeaderAction(view: View) {
         var header: ConstraintLayout = view.findViewById(R.id.include_header)
-        val yearAndMonthButton: Button = header.findViewById(R.id.header_title_button)
-        yearAndMonthButton.text = "うんちの記録"
+        val headerTitleButton: Button = header.findViewById(R.id.header_title_button)
+        headerTitleButton.text = "うんちの記録"
 
         val leftButton: ImageButton = header.findViewById(R.id.left_button)
         leftButton.setOnClickListener {
@@ -69,96 +96,191 @@ class InputPoopFragment : Fragment() {
 
         val rightButton: ImageButton = header.findViewById(R.id.right_button)
         rightButton.setOnClickListener {
-            closedKeyBoard()
-            viewModel.insertPoop(
-                color = selectColor.id,
-                shape = selectShape.id,
-                volume = 0,
-                memo = "",
-                createdAt = Date()
-            )
-
-            val dialog = CustomNotifyDialogFragment.newInstance(
-                title = getString(R.string.dialog_title_notice),
-                msg = getString(R.string.dialog_msg_success_entry_poop),
-                showPositive = true,
-                showNegative = false,
-            )
-            dialog.setOnTappedListner(
-                object : CustomNotifyDialogFragment.onTappedListner {
-                    override fun onNegativeButtonTapped() { }
-
-                    override fun onPositiveButtonTapped() {
-                        parentFragmentManager.beginTransaction().remove(this@InputPoopFragment).commit()
-                    }
-                }
-            )
-            dialog.show(parentFragmentManager, "SuccessEntryPoopDialog")
+            registerAction()
         }
     }
 
+    /**
+     * Poop登録処理
+     */
+    private fun registerAction() {
+        closedKeyBoard()
 
+        // 現在の日付の時間をTimePickerで選択したものに変更
+        var now = Date()
+        val calendar = Calendar.getInstance()
+        calendar.time = now
+        val hour = timePicker.hour
+        val minute = timePicker.minute
+        calendar.set(Calendar.HOUR_OF_DAY, hour)
+        calendar.set(Calendar.MINUTE, minute)
+        val updatedDate = calendar.time
+
+        viewModel.insertPoop(
+            color = selectColor.id,
+            shape = selectShape.id,
+            volume = volumeBar.progress,
+            memo = memoText.text.toString(),
+            createdAt = updatedDate
+        )
+
+        val dialog = CustomNotifyDialogFragment.newInstance(
+            title = getString(R.string.dialog_title_notice),
+            msg = getString(R.string.dialog_msg_success_entry_poop),
+            showPositive = true,
+            showNegative = false,
+        )
+        dialog.setOnTappedListner(
+            object : CustomNotifyDialogFragment.onTappedListner {
+                override fun onNegativeButtonTapped() { }
+
+                override fun onPositiveButtonTapped() {
+                    parentFragmentManager.beginTransaction().remove(this@InputPoopFragment).commit()
+                }
+            }
+        )
+        dialog.show(parentFragmentManager, "SuccessEntryPoopDialog")
+    }
+
+    /**
+     * うんちの量選択処理
+     */
+    public fun setVolumeView(view: View) {
+        volumeBar = view.findViewById(R.id.volume_bar)
+        volumeLabel = view.findViewById(R.id.volume_label)
+        volumeBar.setOnSeekBarChangeListener(
+            object : SeekBar.OnSeekBarChangeListener {
+                // プログレス値が変化しているとき
+                override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+                    volumeLabel.text = PoopVolume.getName(p1)
+                }
+                // スライド開始
+                override fun onStartTrackingTouch(p0: SeekBar?) {}
+                // スライド終了
+                override fun onStopTrackingTouch(p0: SeekBar?) {}
+            }
+        )
+    }
+
+
+    /**
+     * うんちの形選択処理
+     */
     public fun setShapeView(view: View) {
-        val poopShapeKorokoro: ImageButton = view.findViewById(R.id.poop_shape_korokoro)
-        val poopShapeSemiKorokoro: ImageButton = view.findViewById(R.id.poop_shape_semi_korokoro)
-        val poopShapeNormal: ImageButton = view.findViewById(R.id.poop_shape_normal)
-        val poopShapeLiquid: ImageButton = view.findViewById(R.id.poop_shape_semi_liquid)
-        val poopShapeSemiLiquid: ImageButton = view.findViewById(R.id.poop_shape_liquid)
+        poopShapeKorokoro = view.findViewById(R.id.poop_shape_korokoro)
+        poopShapeSemiKorokoro = view.findViewById(R.id.poop_shape_semi_korokoro)
+        poopShapeNormal = view.findViewById(R.id.poop_shape_normal)
+        poopShapeLiquid = view.findViewById(R.id.poop_shape_semi_liquid)
+        poopShapeSemiLiquid = view.findViewById(R.id.poop_shape_liquid)
+
+        val colorValue = ContextCompat.getColor(this.requireContext(), R.color.ex_gray)
 
         poopShapeKorokoro.setOnClickListener {
             selectShape = PoopShape.KOROKORO
+            resetSelectShapeButton()
+            poopShapeKorokoro.setBackgroundColor(colorValue)
         }
         poopShapeSemiKorokoro.setOnClickListener {
             selectShape = PoopShape.SEMIKOROKORO
+            resetSelectShapeButton()
+            poopShapeSemiKorokoro.setBackgroundColor(colorValue)
         }
         poopShapeNormal.setOnClickListener {
             selectShape = PoopShape.NORMAL
+            resetSelectShapeButton()
+            poopShapeNormal.setBackgroundColor(colorValue)
         }
         poopShapeLiquid.setOnClickListener {
             selectShape = PoopShape.SEMILIQUID
+            resetSelectShapeButton()
+            poopShapeLiquid.setBackgroundColor(colorValue)
         }
-        poopShapeKorokoro.setOnClickListener {
+        poopShapeSemiLiquid.setOnClickListener {
             selectShape = PoopShape.LIQUID
+            resetSelectShapeButton()
+            poopShapeSemiLiquid.setBackgroundColor(colorValue)
         }
     }
 
+    /**
+     * 形：選択状態リセット
+     */
+    private fun resetSelectShapeButton() {
+        poopShapeKorokoro.setBackgroundColor(Color.WHITE)
+        poopShapeSemiKorokoro.setBackgroundColor(Color.WHITE)
+        poopShapeNormal.setBackgroundColor(Color.WHITE)
+        poopShapeLiquid.setBackgroundColor(Color.WHITE)
+        poopShapeSemiLiquid.setBackgroundColor(Color.WHITE)
+    }
 
+
+    /**
+     * うんち色選択処理
+     */
     public fun setColorView(view: View) {
-        val selectYellowishBrownButton: View = view.findViewById(R.id.select_yellowish_brown_button)
-        val selectYellowButton: View = view.findViewById(R.id.select_yellow_button)
-        val selectBrownButton: View = view.findViewById(R.id.select_brown_button)
-        val selectDarkBrownButton: View = view.findViewById(R.id.select_dark_brown_button)
-        val selectBlackButton: View = view.findViewById(R.id.select_black_button)
-        val selectGreenButton: View = view.findViewById(R.id.select_green_button)
-        val selectRedButton: View = view.findViewById(R.id.select_red_button)
-        val selectGrayishWhiteButton: View = view.findViewById(R.id.select_grayish_white_button)
-
-
+        selectYellowishBrownButton = view.findViewById(R.id.select_yellowish_brown_button)
+        selectYellowButton = view.findViewById(R.id.select_yellow_button)
+        selectBrownButton = view.findViewById(R.id.select_brown_button)
+        selectDarkBrownButton = view.findViewById(R.id.select_dark_brown_button)
+        selectBlackButton = view.findViewById(R.id.select_black_button)
+        selectGreenButton = view.findViewById(R.id.select_green_button)
+        selectRedButton = view.findViewById(R.id.select_red_button)
+        selectGrayishWhiteButton = view.findViewById(R.id.select_grayish_white_button)
 
         selectYellowishBrownButton.setOnClickListener {
             selectColor = PoopColor.YELLOWISHBROWN
+            resetSelectColorButton()
+            selectYellowishBrownButton.alpha = 0.5f
         }
         selectYellowButton.setOnClickListener {
             selectColor = PoopColor.YELLOW
+            resetSelectColorButton()
+            selectYellowButton.alpha = 0.5f
         }
         selectBrownButton.setOnClickListener {
             selectColor = PoopColor.BROWN
+            resetSelectColorButton()
+            selectBrownButton.alpha = 0.5f
         }
         selectDarkBrownButton.setOnClickListener {
             selectColor = PoopColor.DARKBROWN
+            resetSelectColorButton()
+            selectDarkBrownButton.alpha = 0.5f
         }
         selectBlackButton.setOnClickListener {
             selectColor = PoopColor.BLACK
+            resetSelectColorButton()
+            selectBlackButton.alpha = 0.5f
         }
         selectGreenButton.setOnClickListener {
             selectColor = PoopColor.GREEN
+            resetSelectColorButton()
+            selectGreenButton.alpha = 0.5f
         }
         selectRedButton.setOnClickListener {
             selectColor = PoopColor.RED
+            resetSelectColorButton()
+            selectRedButton.alpha = 0.5f
         }
         selectGrayishWhiteButton.setOnClickListener {
             selectColor = PoopColor.GRAYISHWHITE
+            resetSelectColorButton()
+            selectGrayishWhiteButton.alpha = 0.5f
         }
+    }
+
+    /**
+     * 色：選択状態リセット
+     */
+    private fun resetSelectColorButton() {
+        selectYellowishBrownButton.alpha = 1f
+        selectYellowButton.alpha = 1f
+        selectBrownButton.alpha = 1f
+        selectDarkBrownButton.alpha = 1f
+        selectBlackButton.alpha = 1f
+        selectGreenButton.alpha = 1f
+        selectRedButton.alpha = 1f
+        selectGrayishWhiteButton.alpha = 1f
     }
 
     /**
@@ -168,6 +290,4 @@ class InputPoopFragment : Fragment() {
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
-
-
 }
