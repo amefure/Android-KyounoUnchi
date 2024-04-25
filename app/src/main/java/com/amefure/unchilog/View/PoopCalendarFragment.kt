@@ -26,6 +26,8 @@ import com.amefure.unchilog.View.RecycleViewSetting.WeekAdapter
 import com.amefure.unchilog.ViewModel.PoopViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Calendar
+import java.util.Date
 
 @RequiresApi(Build.VERSION_CODES.O)
 class PoopCalendarFragment : Fragment() {
@@ -44,37 +46,96 @@ class PoopCalendarFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setUpHeaderAction(view)
+        setUpFooterAction(view)
+        setUpRecycleView(view)
+
+        viewModel.poops.observe(viewLifecycleOwner) {
+            Log.e("poops", it.toString())
+        }
+    }
+
+
+    /**
+     * グリッドレイアウトリサイクルビューセットアップ
+     * 1.月の日付
+     * 2.曜日
+     */
+    private fun setUpRecycleView(view: View) {
+        // 月の日付更新
+        lifecycleScope.launch(Dispatchers.Main) {
+            sccalenderRepository.currentDates.collect {
+                val recyclerView: RecyclerView = view.findViewById(R.id.day_recycle_layout)
+                recyclerView.layoutManager =
+                    GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
+                recyclerView.addItemDecoration(
+                    DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+                )
+                recyclerView.adapter = PoopCalendarAdapter(it)
+            }
+        }
+
+        // 曜日グリッドレイアウト更新
+        lifecycleScope.launch(Dispatchers.Main) {
+            sccalenderRepository.dayOfWeekList.collect {
+                val recyclerView: RecyclerView = view.findViewById(R.id.week_recycle_layout)
+                recyclerView.layoutManager =
+                    GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
+                recyclerView.addItemDecoration(
+                    DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+                )
+                recyclerView.adapter = WeekAdapter(it)
+            }
+        }
+    }
+
+    /**
+     * フッターボタンセットアップ
+     */
+    private fun setUpFooterAction(view: View) {
+        val footer: ConstraintLayout = view.findViewById(R.id.include_footer)
+        val entryPoopButton: ImageButton = footer.findViewById(R.id.entry_poop_button)
+
+        entryPoopButton.setOnClickListener {
+            // モードによって切り替え
+            if (false) {
+                viewModel.insertPoop(createdAt = Date())
+                val dialog = CustomNotifyDialogFragment.newInstance(
+                    title = getString(R.string.dialog_title_notice),
+                    msg = getString(R.string.dialog_msg_success_entry_poop),
+                    showPositive = true,
+                    showNegative = false
+                )
+                dialog.show(parentFragmentManager, "SuccessEntryPoopDialog")
+            } else {
+                parentFragmentManager.beginTransaction().apply {
+                    add(R.id.main_frame, InputPoopFragment())
+                    addToBackStack(null)
+                    commit()
+                }
+            }
+        }
+    }
+
+
+    /**
+     * ヘッダーボタンセットアップ
+     * [LeftButton]：backButton
+     * [RightButton]：登録処理ボタン
+     */
+    private fun setUpHeaderAction(view: View) {
         val header: ConstraintLayout = view.findViewById(R.id.include_header)
         val forwardMonthButton: ImageButton = header.findViewById(R.id.forward_month_button)
         val backMonthButton: ImageButton = header.findViewById(R.id.back_month_button)
         val headerSpace: Space = header.findViewById(R.id.header_space)
-        val yearAndMonthButton: Button = header.findViewById(R.id.header_title_button)
+        val headerTitleButton: Button = header.findViewById(R.id.header_title_button)
         val todayButton: ImageButton = header.findViewById(R.id.today_button)
 
         headerSpace.visibility = View.VISIBLE
         forwardMonthButton.visibility = View.VISIBLE
         backMonthButton.visibility = View.VISIBLE
         todayButton.visibility = View.VISIBLE
-
-        val footer: ConstraintLayout = view.findViewById(R.id.include_footer)
-        val entryPoopButton: ImageButton = footer.findViewById(R.id.entry_poop_button)
-
-        entryPoopButton.setOnClickListener {
-//            viewModel.insertPoop(createdAt = Date())
-//            val dialog = CustomNotifyDialogFragment.newInstance(
-//                title = getString(R.string.dialog_title_notice),
-//                msg = getString(R.string.dialog_msg_success_entry_poop),
-//                showPositive = true,
-//                showNegative = false
-//            )
-//            dialog.show(parentFragmentManager, "SuccessEntryPoopDialog")
-
-            parentFragmentManager.beginTransaction().apply {
-                add(R.id.main_frame, InputPoopFragment())
-                addToBackStack(null)
-                commit()
-            }
-        }
 
         forwardMonthButton.setOnClickListener {
             var result = sccalenderRepository.forwardMonth()
@@ -103,45 +164,27 @@ class PoopCalendarFragment : Fragment() {
         }
 
         todayButton.setOnClickListener {
-            sccalenderRepository.moveYearAndMonthCalendar(2024,4)
+            val c = Calendar.getInstance()
+            val year = c.get(Calendar.YEAR)
+            val month = c.get(Calendar.MONTH) + 1
+            sccalenderRepository.moveYearAndMonthCalendar(year,month)
         }
 
-        // 月の日付更新
-        lifecycleScope.launch(Dispatchers.Main) {
-            sccalenderRepository.currentDates.collect {
-                val recyclerView: RecyclerView = view.findViewById(R.id.day_recycle_layout)
-                recyclerView.layoutManager = GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
-                recyclerView.addItemDecoration(
-                    DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-                )
-                recyclerView.adapter = PoopCalendarAdapter(it)
-            }
-        }
+        val leftButton: ImageButton = header.findViewById(R.id.left_button)
+        leftButton.visibility = View.GONE
 
-        // 曜日グリッドレイアウト更新
-        lifecycleScope.launch(Dispatchers.Main) {
-            sccalenderRepository.dayOfWeekList.collect {
-                val recyclerView: RecyclerView = view.findViewById(R.id.week_recycle_layout)
-                recyclerView.layoutManager = GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
-                recyclerView.addItemDecoration(
-                    DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-                )
-                recyclerView.adapter = WeekAdapter(it)
-            }
+        val rightButton: ImageButton = header.findViewById(R.id.right_button)
+        rightButton.setOnClickListener {
+            // TODO: 設定画面へ
         }
 
         // ヘッダーの[2024年4月]テキスト更新
         lifecycleScope.launch(Dispatchers.Main) {
             sccalenderRepository.currentYearAndMonth.collect {
                 it?.let {
-                    yearAndMonthButton.text = it.fullname
+                    headerTitleButton.text = it.fullname
                 }
             }
         }
-
-        viewModel.poops.observe(viewLifecycleOwner) {
-            Log.e("poops", it.toString())
-        }
     }
-
 }
