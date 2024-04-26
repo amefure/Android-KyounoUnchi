@@ -10,6 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:layout_marginLeft="20dp"
         android:orientation="vertical">
 
 
@@ -19,6 +20,7 @@
             android:background="@color/ex_thema" />
 
         <TextView
+            android:id="@+id/poop_time"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:background="@drawable/corner_radius_shape"
@@ -58,7 +60,6 @@
                 android:id="@+id/poop_color"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-
                 android:background="@drawable/ex_circle_shape"
                 android:backgroundTint="@color/ex_poop_yellowish_brown" />
 

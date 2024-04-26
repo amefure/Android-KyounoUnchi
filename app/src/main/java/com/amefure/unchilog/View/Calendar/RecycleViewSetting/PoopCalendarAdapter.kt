@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.amefure.unchilog.Model.Room.Poop
 import com.amefure.unchilog.Model.SCCalender.SCDate
 import com.amefure.unchilog.R
+import com.amefure.unchilog.Utility.DateFormatUtility
 import java.util.Calendar
 import java.util.Date
 
@@ -42,7 +43,7 @@ class PoopCalendarAdapter(
         if (scdate.day != -1) {
             holder.day.text = scdate.day.toString()
             scdate.date?.let { date ->
-                val count = poopList.count { isSameDate(it.createdAt, date) }
+                val count = poopList.count { DateFormatUtility.isSameDate(it.createdAt, date) }
                 if (count != 0) {
                     holder.poopLayout.visibility = View.VISIBLE
                     holder.poopCnt.text = count.toString()
@@ -59,14 +60,5 @@ class PoopCalendarAdapter(
         val poopLayout: ConstraintLayout = itemView.findViewById(R.id.poop_count_layout)
     }
 
-    private fun isSameDate(date1: Date, date2: Date): Boolean {
-        val cal1 = Calendar.getInstance()
-        val cal2 = Calendar.getInstance()
-        cal1.time = date1
-        cal2.time = date2
 
-        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH) &&
-                cal1.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH)
-    }
 }

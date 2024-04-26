@@ -1,5 +1,6 @@
 package com.amefure.unchilog.View.TheDayDetail
 
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,18 +8,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amefure.unchilog.Model.Key.AppArgKey
 import com.amefure.unchilog.R
+import com.amefure.unchilog.Utility.DateFormatUtility
 import com.amefure.unchilog.View.Calendar.RecycleViewSetting.PoopCalendarAdapter
 import com.amefure.unchilog.View.Calendar.RecycleViewSetting.WeekAdapter
 import com.amefure.unchilog.View.Dialog.CustomNotifyDialogFragment
 import com.amefure.unchilog.View.InputPoopFragment
+import com.amefure.unchilog.View.TheDayDetail.RecycleViewSetting.PoopRowAdapter
 import com.amefure.unchilog.ViewModel.PoopViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -63,7 +68,13 @@ class TheDayDetailFragment : Fragment() {
      */
     private fun setUpRecycleView(view: View) {
         viewModel.poops.observe(viewLifecycleOwner) { poops ->
-
+            val filteringList = poops.filter  { DateFormatUtility.isSameDate(it.createdAt, date) }
+            val recyclerView: RecyclerView = view.findViewById(R.id.poop_recycle_layout)
+            recyclerView.layoutManager = LinearLayoutManager(this.requireContext())
+            recyclerView.addItemDecoration(
+                DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+            )
+            recyclerView.adapter = PoopRowAdapter(filteringList, this.requireContext())
         }
     }
 
@@ -104,8 +115,8 @@ class TheDayDetailFragment : Fragment() {
     private fun setUpHeaderAction(view: View) {
         val header: ConstraintLayout = view.findViewById(R.id.include_header)
         val headerTitleButton: Button = header.findViewById(R.id.header_title_button)
-        val df = SimpleDateFormat("yyyy年MM月dd日")
-        headerTitleButton.text = df.format(date)
+        val df = DateFormatUtility()
+        headerTitleButton.text = df.getString(date)
 
         val leftButton: ImageButton = header.findViewById(R.id.left_button)
         leftButton.setOnClickListener {
