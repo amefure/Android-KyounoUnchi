@@ -1,4 +1,4 @@
-package com.amefure.unchilog.View.RecycleViewSetting
+package com.amefure.unchilog.View.Calendar.RecycleViewSetting
 
 import android.os.Build
 import android.view.LayoutInflater

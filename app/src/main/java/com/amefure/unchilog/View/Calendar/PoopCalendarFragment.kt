@@ -1,8 +1,7 @@
-package com.amefure.unchilog.View
+package com.amefure.unchilog.View.Calendar
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,12 +16,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.amefure.unchilog.Model.SCCalender.SCDate
 import com.amefure.unchilog.R
 import com.amefure.unchilog.Repository.SCCalender.SCCalenderRepository
 import com.amefure.unchilog.Repository.SCCalender.fullname
 import com.amefure.unchilog.View.Dialog.CustomNotifyDialogFragment
-import com.amefure.unchilog.View.RecycleViewSetting.PoopCalendarAdapter
-import com.amefure.unchilog.View.RecycleViewSetting.WeekAdapter
+import com.amefure.unchilog.View.InputPoopFragment
+import com.amefure.unchilog.View.Calendar.RecycleViewSetting.PoopCalendarAdapter
+import com.amefure.unchilog.View.Calendar.RecycleViewSetting.TheDayTouchListener
+import com.amefure.unchilog.View.Calendar.RecycleViewSetting.WeekAdapter
+import com.amefure.unchilog.View.TheDayDetail.TheDayDetailFragment
 import com.amefure.unchilog.ViewModel.PoopViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,14 +49,10 @@ class PoopCalendarFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        viewModel.fetchAllPoops()
         setUpHeaderAction(view)
         setUpFooterAction(view)
         setUpRecycleView(view)
-
-        viewModel.poops.observe(viewLifecycleOwner) {
-            Log.e("poops", it.toString())
-        }
     }
 
 
@@ -63,29 +62,43 @@ class PoopCalendarFragment : Fragment() {
      * 2.曜日
      */
     private fun setUpRecycleView(view: View) {
-        // 月の日付更新
-        lifecycleScope.launch(Dispatchers.Main) {
-            sccalenderRepository.currentDates.collect {
-                val recyclerView: RecyclerView = view.findViewById(R.id.day_recycle_layout)
-                recyclerView.layoutManager =
-                    GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
-                recyclerView.addItemDecoration(
-                    DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-                )
-                recyclerView.adapter = PoopCalendarAdapter(it)
+        viewModel.poops.observe(viewLifecycleOwner) { poops ->
+            // 月の日付更新
+            lifecycleScope.launch(Dispatchers.Main) {
+                sccalenderRepository.currentDates.collect { scdate ->
+                    val recyclerView: RecyclerView = view.findViewById(R.id.day_recycle_layout)
+                    recyclerView.layoutManager =
+                        GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
+                    val itemTouchListener = TheDayTouchListener()
+                    itemTouchListener.setOnTappedListener(
+                        object : TheDayTouchListener.onTappedListener{
+                            override fun onTapped(scdate: SCDate) {
+                                scdate.date?.let { date ->
+                                    parentFragmentManager.beginTransaction().apply {
+                                        add(R.id.main_frame, TheDayDetailFragment.newInstance(date.time))
+                                        addToBackStack(null)
+                                        commit()
+                                    }
+                                }
+                            }
+                        }
+                    )
+                    recyclerView.addOnItemTouchListener(itemTouchListener)
+                    recyclerView.adapter = PoopCalendarAdapter(scdate, poops)
+                }
             }
-        }
 
-        // 曜日グリッドレイアウト更新
-        lifecycleScope.launch(Dispatchers.Main) {
-            sccalenderRepository.dayOfWeekList.collect {
-                val recyclerView: RecyclerView = view.findViewById(R.id.week_recycle_layout)
-                recyclerView.layoutManager =
-                    GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
-                recyclerView.addItemDecoration(
-                    DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-                )
-                recyclerView.adapter = WeekAdapter(it)
+            // 曜日グリッドレイアウト更新
+            lifecycleScope.launch(Dispatchers.Main) {
+                sccalenderRepository.dayOfWeekList.collect { week ->
+                    val recyclerView: RecyclerView = view.findViewById(R.id.week_recycle_layout)
+                    recyclerView.layoutManager =
+                        GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
+                    recyclerView.addItemDecoration(
+                        DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+                    )
+                    recyclerView.adapter = WeekAdapter(week)
+                }
             }
         }
     }
@@ -171,7 +184,8 @@ class PoopCalendarFragment : Fragment() {
         }
 
         val leftButton: ImageButton = header.findViewById(R.id.left_button)
-        leftButton.visibility = View.GONE
+        leftButton.setImageDrawable(null)
+        leftButton.isEnabled = false
 
         val rightButton: ImageButton = header.findViewById(R.id.right_button)
         rightButton.setOnClickListener {

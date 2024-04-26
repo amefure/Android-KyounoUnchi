@@ -2,6 +2,7 @@ package com.amefure.unchilog.View
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,12 +17,15 @@ import android.widget.TextView
 import android.widget.TimePicker
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.viewModels
+import com.amefure.unchilog.Model.Key.AppArgKey
 import com.amefure.unchilog.Model.Room.PoopColor
 import com.amefure.unchilog.Model.Room.PoopShape
 import com.amefure.unchilog.Model.Room.PoopVolume
 import com.amefure.unchilog.R
 import com.amefure.unchilog.View.Dialog.CustomNotifyDialogFragment
+import com.amefure.unchilog.View.TheDayDetail.TheDayDetailFragment
 import com.amefure.unchilog.ViewModel.PoopViewModel
 import java.util.Calendar
 import java.util.Date
@@ -59,6 +63,17 @@ class InputPoopFragment : Fragment() {
     private lateinit var timePicker: TimePicker
     private lateinit var memoText: EditText
 
+    private var dateStr: Long = 0
+    private var date: Date = Date()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            dateStr = it.getLong(AppArgKey.ARG_INPUT_THE_DAY_KEY)
+            date = Date(dateStr)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -95,6 +110,8 @@ class InputPoopFragment : Fragment() {
         }
 
         val rightButton: ImageButton = header.findViewById(R.id.right_button)
+        val checkIcon: Drawable? = ResourcesCompat.getDrawable(getResources(), R.drawable.button_check, null)
+        rightButton.setImageDrawable(checkIcon)
         rightButton.setOnClickListener {
             registerAction()
         }
@@ -107,7 +124,7 @@ class InputPoopFragment : Fragment() {
         closedKeyBoard()
 
         // 現在の日付の時間をTimePickerで選択したものに変更
-        var now = Date()
+        var now = date
         val calendar = Calendar.getInstance()
         calendar.time = now
         val hour = timePicker.hour
@@ -289,5 +306,20 @@ class InputPoopFragment : Fragment() {
     private fun closedKeyBoard() {
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view?.windowToken, 0)
+    }
+
+
+    /**
+     * 引数を渡すため
+     * シングルトンインスタンス生成
+     */
+    companion object {
+        @JvmStatic
+        fun newInstance(date: Long) =
+            InputPoopFragment().apply {
+                arguments = Bundle().apply {
+                    putLong(AppArgKey.ARG_INPUT_THE_DAY_KEY, date)
+                }
+            }
     }
 }

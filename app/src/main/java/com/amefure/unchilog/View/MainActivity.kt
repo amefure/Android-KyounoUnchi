@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.annotation.RequiresApi
 import com.amefure.unchilog.R
+import com.amefure.unchilog.View.Calendar.PoopCalendarFragment
 import com.google.android.gms.ads.MobileAds
 
 @RequiresApi(Build.VERSION_CODES.O)
