@@ -118,6 +118,44 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center"
                     android:layout_marginStart="20dp"
+                    android:src="@drawable/icon_add" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="20dp"
+                    android:maxWidth="200dp"
+                    android:maxLines="2"
+                    android:text="@string/setting_app_entry_mode"
+                    android:textColor="@color/ex_text" />
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <ImageButton
+                    android:id="@+id/entry_mode_button"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="20dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="20dp"
+                    android:src="@drawable/button_arrow_forward"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/ex_gray"
+                android:orientation="horizontal">
+
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="20dp"
                     android:src="@drawable/icon_app_lock" />
 
                 <TextView

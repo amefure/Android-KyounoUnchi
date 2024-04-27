@@ -98,7 +98,6 @@ class SelectInitWeekFragment : Fragment() {
         )
         recyclerView.addOnItemTouchListener(itemTouchListener)
         recyclerView.adapter = InitWeekAdapter(selectWeek)
-
     }
 
     /**

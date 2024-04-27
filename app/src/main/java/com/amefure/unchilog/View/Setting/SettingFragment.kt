@@ -49,6 +49,15 @@ class SettingFragment : Fragment() {
             }
         }
 
+        val entryModeButton: ImageButton = view.findViewById(R.id.entry_mode_button)
+        entryModeButton.setOnClickListener {
+            parentFragmentManager.beginTransaction().apply {
+                add(R.id.main_frame, SelecteModeFragment())
+                addToBackStack(null)
+                commit()
+            }
+        }
+
         val appLockButton: Button = view.findViewById(R.id.app_lock_button)
 
         lifecycleScope.launch(Dispatchers.Main) {

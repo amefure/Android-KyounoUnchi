@@ -43,6 +43,8 @@ class PoopCalendarFragment : Fragment(){
     // カレンダーロジックリポジトリ
     private lateinit var sccalenderRepository: SCCalenderRepository
 
+    private var selectMode: Int = 0
+
     private val poopViewModel: PoopViewModel by viewModels()
     private val viewModel: PoopCalendarViewModel by viewModels()
 
@@ -55,7 +57,7 @@ class PoopCalendarFragment : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        sccalenderRepository = SCCalenderRepository()
         poopViewModel.fetchAllPoops()
 
         setUpHeaderAction(view)
@@ -67,6 +69,12 @@ class PoopCalendarFragment : Fragment(){
                 val dayOfWeek = week.toString().toDayOfWeek()
                 sccalenderRepository = SCCalenderRepository(dayOfWeek)
                 setUpRecycleView(view)
+            }
+        }
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.observeEntryMode().collect { mode ->
+                selectMode = mode ?: 0
             }
         }
     }
@@ -142,9 +150,6 @@ class PoopCalendarFragment : Fragment(){
                     val recyclerView: RecyclerView = view.findViewById(R.id.week_recycle_layout)
                     recyclerView.layoutManager =
                         GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
-                    recyclerView.addItemDecoration(
-                        DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-                    )
                     recyclerView.adapter = WeekAdapter(week, this@PoopCalendarFragment.requireContext())
                 }
             }
@@ -160,7 +165,7 @@ class PoopCalendarFragment : Fragment(){
 
         entryPoopButton.setOnClickListener {
             // モードによって切り替え
-            if (false) {
+            if (selectMode == 0) {
                 poopViewModel.insertPoop(createdAt = Date())
                 val dialog = CustomNotifyDialogFragment.newInstance(
                     title = getString(R.string.dialog_title_notice),

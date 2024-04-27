@@ -27,6 +27,22 @@ class SettingViewModel (app: Application) : RootViewModel(app) {
     }
 
     /**
+     * 登録モード保存
+     */
+    public fun saveEntryMode(pass: Int) {
+        viewModelScope.launch {
+            dataStoreRepository.saveEntryMode(pass)
+        }
+    }
+
+    /**
+     * 登録モード観測
+     */
+    public fun observeEntryMode(): Flow<Int?> {
+        return dataStoreRepository.observeEntryMode()
+    }
+
+    /**
      * 週始まり保存
      */
     public fun saveInitWeek(week: String) {

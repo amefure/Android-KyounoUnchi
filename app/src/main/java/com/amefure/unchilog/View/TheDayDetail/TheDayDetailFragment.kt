@@ -32,6 +32,7 @@ import com.amefure.unchilog.View.InputPoopFragment
 import com.amefure.unchilog.View.TheDayDetail.RecycleViewSetting.PoopRowAdapter
 import com.amefure.unchilog.View.TheDayDetail.RecycleViewSetting.PoopRowTouchListener
 import com.amefure.unchilog.ViewModel.PoopViewModel
+import com.amefure.unchilog.ViewModel.TheDayDetailViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -44,8 +45,10 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
     private var date: Date = Date()
 
     private var selectPoop: Poop? = null
+    private var selectMode: Int = 0
 
-    private val viewModel: PoopViewModel by viewModels()
+    private val poopViewModel: PoopViewModel by viewModels()
+    private val viewModel: TheDayDetailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,10 +67,16 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.fetchAllPoops()
+        poopViewModel.fetchAllPoops()
         setUpHeaderAction(view)
         setUpFooterAction(view)
         setUpRecycleView(view)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.observeEntryMode().collect { mode ->
+                selectMode = mode ?: 0
+            }
+        }
     }
 
     /**
@@ -88,7 +97,7 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
      * 2.曜日
      */
     private fun setUpRecycleView(view: View) {
-        viewModel.poops.observe(viewLifecycleOwner) { poops ->
+        poopViewModel.poops.observe(viewLifecycleOwner) { poops ->
             val filteringList = poops.filter  { DateFormatUtility.isSameDate(it.createdAt, date) }
             val recyclerView: RecyclerView = view.findViewById(R.id.poop_recycle_layout)
             if (filteringList.size != 0) {
@@ -128,8 +137,8 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
 
         entryPoopButton.setOnClickListener {
             // モードによって切り替え
-            if (false) {
-                viewModel.insertPoop(createdAt = date)
+            if (selectMode == 0) {
+                poopViewModel.insertPoop(createdAt = date)
                 val dialog = CustomNotifyDialogFragment.newInstance(
                     title = getString(R.string.dialog_title_notice),
                     msg = getString(R.string.dialog_msg_success_entry_poop),
@@ -197,7 +206,7 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
                         override fun onNegativeButtonTapped() { }
 
                         override fun onPositiveButtonTapped() {
-                            viewModel.deletePoop(poop)
+                            poopViewModel.deletePoop(poop)
                         }
                     }
                 )
