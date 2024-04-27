@@ -35,6 +35,7 @@ import com.amefure.unchilog.View.InputPoopFragment
 import com.amefure.unchilog.View.Calendar.RecycleViewSetting.PoopCalendarAdapter
 import com.amefure.unchilog.View.Calendar.RecycleViewSetting.TheDayTouchListener
 import com.amefure.unchilog.View.Calendar.RecycleViewSetting.WeekAdapter
+import com.amefure.unchilog.View.Setting.SettingFragment
 import com.amefure.unchilog.View.TheDayDetail.TheDayDetailFragment
 import com.amefure.unchilog.ViewModel.PoopViewModel
 import kotlinx.coroutines.Dispatchers
@@ -233,7 +234,11 @@ class PoopCalendarFragment : Fragment(){
 
         val rightButton: ImageButton = header.findViewById(R.id.right_button)
         rightButton.setOnClickListener {
-            // TODO: 設定画面へ
+            parentFragmentManager.beginTransaction().apply {
+                add(R.id.main_frame, SettingFragment())
+                addToBackStack(null)
+                commit()
+            }
         }
 
         // ヘッダーの[2024年4月]テキスト更新
