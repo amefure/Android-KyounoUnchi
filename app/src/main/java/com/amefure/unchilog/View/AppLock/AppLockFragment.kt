@@ -244,18 +244,21 @@ class AppLockFragment : Fragment() {
     private fun setUpHeaderAction(view: View) {
         val headerView: ConstraintLayout = view.findViewById(R.id.include_header)
         val leftButton: ImageButton = headerView.findViewById(R.id.left_button)
+        val headerTitleButton: Button = headerView.findViewById(R.id.header_title_button)
+        headerTitleButton.text = "アプリロック"
 
         if (inputFlag) {
             leftButton.setOnClickListener {
                 parentFragmentManager.popBackStack()
             }
         } else {
-            leftButton.visibility = View.GONE
+            leftButton.setImageDrawable(null)
+            leftButton.isEnabled = false
         }
 
-
         val rightButton: ImageButton = headerView.findViewById(R.id.right_button)
-        rightButton.visibility = View.GONE
+        rightButton.setImageDrawable(null)
+        rightButton.isEnabled = false
     }
 
     /**
