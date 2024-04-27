@@ -245,7 +245,7 @@ class AppLockFragment : Fragment() {
         val headerView: ConstraintLayout = view.findViewById(R.id.include_header)
         val leftButton: ImageButton = headerView.findViewById(R.id.left_button)
         val headerTitleButton: Button = headerView.findViewById(R.id.header_title_button)
-        headerTitleButton.text = "アプリロック"
+        headerTitleButton.text = if (inputFlag) "パスワード登録" else "今日のうんち"
 
         if (inputFlag) {
             leftButton.setOnClickListener {

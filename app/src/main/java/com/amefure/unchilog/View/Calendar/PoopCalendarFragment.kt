@@ -142,7 +142,7 @@ class PoopCalendarFragment : Fragment(){
                     recyclerView.addItemDecoration(
                         DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
                     )
-                    recyclerView.adapter = WeekAdapter(week)
+                    recyclerView.adapter = WeekAdapter(week, this@PoopCalendarFragment.requireContext())
                 }
             }
         }

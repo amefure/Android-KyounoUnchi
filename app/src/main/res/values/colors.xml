@@ -5,6 +5,8 @@
     <color name="ex_gray">#E7E7E7</color>
     <color name="ex_negative">#AF3F32</color>
     <color name="ex_positive">#6F8EAB</color>
+    <color name="ex_week_holiday_sun">#FF0000</color>
+    <color name="ex_week_holiday_sat">#0000FF</color>
     <color name="ex_poop_black">#360000</color>
     <color name="ex_poop_brown">#743423</color>
     <color name="ex_poop_dark_brown">#654321</color>
