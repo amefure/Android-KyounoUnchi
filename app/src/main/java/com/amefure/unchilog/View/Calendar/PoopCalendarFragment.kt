@@ -1,24 +1,15 @@
 package com.amefure.unchilog.View.Calendar
 
-import android.app.Activity
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.ActionMode
-import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
-import android.widget.PopupMenu
 import android.widget.Space
 import android.widget.TextView
-import android.widget.Toast
-import androidx.annotation.MenuRes
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.viewModels
@@ -30,6 +21,7 @@ import com.amefure.unchilog.Model.SCCalender.SCDate
 import com.amefure.unchilog.R
 import com.amefure.unchilog.Repository.SCCalender.SCCalenderRepository
 import com.amefure.unchilog.Repository.SCCalender.fullname
+import com.amefure.unchilog.Repository.SCCalender.toDayOfWeek
 import com.amefure.unchilog.View.Dialog.CustomNotifyDialogFragment
 import com.amefure.unchilog.View.InputPoopFragment
 import com.amefure.unchilog.View.Calendar.RecycleViewSetting.PoopCalendarAdapter
@@ -37,9 +29,11 @@ import com.amefure.unchilog.View.Calendar.RecycleViewSetting.TheDayTouchListener
 import com.amefure.unchilog.View.Calendar.RecycleViewSetting.WeekAdapter
 import com.amefure.unchilog.View.Setting.SettingFragment
 import com.amefure.unchilog.View.TheDayDetail.TheDayDetailFragment
+import com.amefure.unchilog.ViewModel.PoopCalendarViewModel
 import com.amefure.unchilog.ViewModel.PoopViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.DayOfWeek
 import java.util.Calendar
 import java.util.Date
 
@@ -47,9 +41,10 @@ import java.util.Date
 class PoopCalendarFragment : Fragment(){
 
     // カレンダーロジックリポジトリ
-    private var sccalenderRepository = SCCalenderRepository()
+    private lateinit var sccalenderRepository: SCCalenderRepository
 
-    private val viewModel: PoopViewModel by viewModels()
+    private val poopViewModel: PoopViewModel by viewModels()
+    private val viewModel: PoopCalendarViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,12 +55,20 @@ class PoopCalendarFragment : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.fetchAllPoops()
+
+        poopViewModel.fetchAllPoops()
+
         setUpHeaderAction(view)
         setUpFooterAction(view)
-        setUpRecycleView(view)
         setUpPoopMessage(view)
 
+        lifecycleScope.launch(Dispatchers.Main) {
+            viewModel.observeInitWeek().collect { week ->
+                val dayOfWeek = week.toString().toDayOfWeek()
+                sccalenderRepository = SCCalenderRepository(dayOfWeek)
+                setUpRecycleView(view)
+            }
+        }
     }
 
     /**
@@ -104,7 +107,7 @@ class PoopCalendarFragment : Fragment(){
      * 2.曜日
      */
     private fun setUpRecycleView(view: View) {
-        viewModel.poops.observe(viewLifecycleOwner) { poops ->
+        poopViewModel.poops.observe(viewLifecycleOwner) { poops ->
             // 月の日付更新
             lifecycleScope.launch(Dispatchers.Main) {
                 sccalenderRepository.currentDates.collect { scdate ->
@@ -158,7 +161,7 @@ class PoopCalendarFragment : Fragment(){
         entryPoopButton.setOnClickListener {
             // モードによって切り替え
             if (false) {
-                viewModel.insertPoop(createdAt = Date())
+                poopViewModel.insertPoop(createdAt = Date())
                 val dialog = CustomNotifyDialogFragment.newInstance(
                     title = getString(R.string.dialog_title_notice),
                     msg = getString(R.string.dialog_msg_success_entry_poop),

@@ -218,3 +218,16 @@ val DayOfWeek.shortSymbols: String
             DayOfWeek.SUNDAY -> "日"
         }
     }
+
+fun String.toDayOfWeek(): DayOfWeek {
+    return when (this) {
+        "月曜日" -> DayOfWeek.MONDAY
+        "火曜日" -> DayOfWeek.TUESDAY
+        "水曜日" -> DayOfWeek.WEDNESDAY
+        "木曜日" -> DayOfWeek.THURSDAY
+        "金曜日" -> DayOfWeek.FRIDAY
+        "土曜日" -> DayOfWeek.SATURDAY
+        "日曜日" -> DayOfWeek.SUNDAY
+        else -> DayOfWeek.SUNDAY
+    }
+}
