@@ -40,6 +40,15 @@ class SettingFragment : Fragment() {
 
         setUpHeaderAction(view)
 
+        val initWeekButton: ImageButton = view.findViewById(R.id.init_week_button)
+        initWeekButton.setOnClickListener {
+            parentFragmentManager.beginTransaction().apply {
+                add(R.id.main_frame, SelectInitWeekFragment())
+                addToBackStack(null)
+                commit()
+            }
+        }
+
         val appLockButton: Button = view.findViewById(R.id.app_lock_button)
 
         lifecycleScope.launch(Dispatchers.Main) {

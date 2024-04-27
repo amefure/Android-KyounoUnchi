@@ -23,6 +23,7 @@
     <string name="dialog_msg_update_entry_poop">うんちの記録を\n更新しました。</string>
     <string name="dialog_msg_delete_poop">うんちの記録を本当に削除しますか？</string>
     <string name="dialog_msg_failed_calendar_out_range">カレンダーの表示範囲外です。</string>
+    <string name="dialog_msg_update_init_week">週始まりを「%1$s」に変更しました。</string>
 
     <!-- App Lock Dialog -->
     <string name="dialog_save_password">パスワードを設定してアプリをロックしました。</string>
@@ -30,6 +31,8 @@
     <string name="dialog_different_password">パスワードが違います。</string>
 
     <!-- Setting -->
+    <string name="setting_app_calendar_init_week">週始まり</string>
+    
     <string name="setting_app_lock">アプリをロックする</string>
     <string name="setting_app_lock_desc">・アプリにパスワードを設定してロックをかけることができます。</string>
 

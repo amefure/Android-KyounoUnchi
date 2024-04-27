@@ -25,4 +25,20 @@ class SettingViewModel (app: Application) : RootViewModel(app) {
     public fun observeAppLockPassword(): Flow<Int?> {
         return dataStoreRepository.observeAppLockPassword()
     }
+
+    /**
+     * 週始まり保存
+     */
+    public fun saveInitWeek(week: String) {
+        viewModelScope.launch {
+            dataStoreRepository.saveInitWeek(week)
+        }
+    }
+
+    /**
+     * 週始まり観測
+     */
+    public fun observeInitWeek(): Flow<String?> {
+        return dataStoreRepository.observeInitWeek()
+    }
 }

@@ -31,6 +31,62 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <LinearLayout
+                android:id="@+id/app_calendar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:layout_marginTop="24dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_weight="1"
+                    android:text="カレンダー設定"
+                    android:textColor="@color/ex_text" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/ex_gray"
+                android:orientation="horizontal">
+
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="20dp"
+                    android:src="@drawable/icon_calendar" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="20dp"
+                    android:maxWidth="200dp"
+                    android:maxLines="2"
+                    android:text="@string/setting_app_calendar_init_week"
+                    android:textColor="@color/ex_text" />
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <ImageButton
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="20dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/init_week_button"
+                    android:layout_marginEnd="20dp"
+                    android:src="@drawable/button_arrow_forward"/>
+            </LinearLayout>
+
 
             <LinearLayout
                 android:id="@+id/app_setting_layout"
@@ -54,8 +110,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@color/ex_gray"
-                android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@+id/notify_setting_2">
+                android:orientation="horizontal">
 
 
                 <ImageView
