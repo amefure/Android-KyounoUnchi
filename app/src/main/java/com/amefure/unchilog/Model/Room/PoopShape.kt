@@ -38,5 +38,8 @@ enum class PoopShape(val id: Int) {
         fun getDrawable(id: Int): Int {
             return PoopShape.values().find { it.id == id }?.drawable() ?: R.drawable.noface_poop
         }
+        fun getPoopShape(id: Int): PoopShape {
+            return PoopShape.values().find { it.id == id } ?: PoopShape.UNDEFINED
+        }
     }
 }

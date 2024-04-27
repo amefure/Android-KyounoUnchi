@@ -89,24 +89,26 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
     private fun setUpRecycleView(view: View) {
         viewModel.poops.observe(viewLifecycleOwner) { poops ->
             val filteringList = poops.filter  { DateFormatUtility.isSameDate(it.createdAt, date) }
-            val recyclerView: RecyclerView = view.findViewById(R.id.poop_recycle_layout)
-            recyclerView.layoutManager = LinearLayoutManager(this.requireContext())
-            recyclerView.addItemDecoration(
-                DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-            )
-            val itemTouchListener = PoopRowTouchListener()
-            itemTouchListener.setOnTappedListener(
-                object : PoopRowTouchListener.onTappedListener {
-                    override fun onTapped(poop: Poop, rowView: View) {
-                        selectPoop = poop
-                        showPopupMenu(rowView)
+            if (filteringList.size != 0) {
+                val recyclerView: RecyclerView = view.findViewById(R.id.poop_recycle_layout)
+                recyclerView.layoutManager = LinearLayoutManager(this.requireContext())
+                recyclerView.addItemDecoration(
+                    DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+                )
+                val itemTouchListener = PoopRowTouchListener()
+                itemTouchListener.setOnTappedListener(
+                    object : PoopRowTouchListener.onTappedListener {
+                        override fun onTapped(poop: Poop, rowView: View) {
+                            selectPoop = poop
+                            showPopupMenu(rowView)
+                        }
                     }
-                }
-            )
-            recyclerView.addOnItemTouchListener(itemTouchListener)
+                )
+                recyclerView.addOnItemTouchListener(itemTouchListener)
+                recyclerView.adapter = PoopRowAdapter(filteringList, this.requireContext())
+            } else {
 
-            recyclerView.adapter = PoopRowAdapter(filteringList, this.requireContext())
-
+            }
         }
     }
 

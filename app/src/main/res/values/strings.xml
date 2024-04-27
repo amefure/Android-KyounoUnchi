@@ -4,6 +4,7 @@
     <!-- Dialog -->
     <string name="dialog_title_notice">お知らせ</string>
     <string name="dialog_msg_success_entry_poop">うんちの記録を\n登録しました。</string>
+    <string name="dialog_msg_update_entry_poop">うんちの記録を\n更新しました。</string>
     <string name="dialog_msg_delete_poop">うんちの記録を本当に削除しますか？</string>
     <string name="dialog_msg_failed_calendar_out_range">カレンダーの表示範囲外です。</string>
 

@@ -25,5 +25,8 @@ enum class PoopVolume(val id: Int) {
         fun getName(id: Int): String {
             return values().find { it.id == id }?.desc() ?: "中くらい"
         }
+        fun getPoopVolume(id: Int): PoopVolume {
+            return PoopVolume.values().find { it.id == id } ?: PoopVolume.UNDEFINED
+        }
     }
 }

@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.viewModels
 import com.amefure.unchilog.Model.Key.AppArgKey
+import com.amefure.unchilog.Model.Room.Poop
 import com.amefure.unchilog.Model.Room.PoopColor
 import com.amefure.unchilog.Model.Room.PoopShape
 import com.amefure.unchilog.Model.Room.PoopVolume
@@ -65,8 +66,12 @@ class InputPoopFragment : Fragment() {
     private lateinit var memoText: EditText
 
     private var dateStr: Long = 0
-    private var poopId: Int? = null
+    private var poopId: Int = 0
+    private var poop: Poop? = null
     private var date: Date = Date()
+
+    // Shape選択時のグレー背景カラーリソース格納用
+    private var shapeSelectColorValue: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,15 +92,26 @@ class InputPoopFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Log.e("---", poopId.toString())
-
         timePicker = view.findViewById(R.id.timePicker)
+        timePicker.setIs24HourView(true)
         memoText = view.findViewById(R.id.memo_edit)
+
+        // Shape選択時のグレー背景カラーリソース格納
+        shapeSelectColorValue = ContextCompat.getColor(this.requireContext(), R.color.ex_gray)
 
         setUpHeaderAction(view)
         setColorView(view)
         setShapeView(view)
         setVolumeView(view)
+
+        if (poopId != 0) {
+            this.viewModel.fetchSinglePoop(poopId) {
+                setUpUpdatePoopUI(it)
+                poop = it
+            }
+        } else {
+            setUpInitPoopUI()
+        }
     }
 
     /**
@@ -138,17 +154,28 @@ class InputPoopFragment : Fragment() {
         calendar.set(Calendar.MINUTE, minute)
         val updatedDate = calendar.time
 
-        viewModel.insertPoop(
-            color = selectColor.id,
-            shape = selectShape.id,
-            volume = volumeBar.progress,
-            memo = memoText.text.toString(),
-            createdAt = updatedDate
-        )
+        if (poop != null) {
+            viewModel.updatePoop(
+                id = poop!!.id,
+                color = selectColor.id,
+                shape = selectShape.id,
+                volume = volumeBar.progress,
+                memo = memoText.text.toString(),
+                createdAt = updatedDate
+            )
+        } else {
+            viewModel.insertPoop(
+                color = selectColor.id,
+                shape = selectShape.id,
+                volume = volumeBar.progress,
+                memo = memoText.text.toString(),
+                createdAt = updatedDate
+            )
+        }
 
         val dialog = CustomNotifyDialogFragment.newInstance(
             title = getString(R.string.dialog_title_notice),
-            msg = getString(R.string.dialog_msg_success_entry_poop),
+            msg =  poop?.let { getString(R.string.dialog_msg_success_entry_poop) } ?: getString(R.string.dialog_msg_update_entry_poop),
             showPositive = true,
             showNegative = false,
         )
@@ -195,32 +222,30 @@ class InputPoopFragment : Fragment() {
         poopShapeLiquid = view.findViewById(R.id.poop_shape_semi_liquid)
         poopShapeSemiLiquid = view.findViewById(R.id.poop_shape_liquid)
 
-        val colorValue = ContextCompat.getColor(this.requireContext(), R.color.ex_gray)
-
         poopShapeKorokoro.setOnClickListener {
             selectShape = PoopShape.KOROKORO
             resetSelectShapeButton()
-            poopShapeKorokoro.setBackgroundColor(colorValue)
+            poopShapeKorokoro.setBackgroundColor(shapeSelectColorValue)
         }
         poopShapeSemiKorokoro.setOnClickListener {
             selectShape = PoopShape.SEMIKOROKORO
             resetSelectShapeButton()
-            poopShapeSemiKorokoro.setBackgroundColor(colorValue)
+            poopShapeSemiKorokoro.setBackgroundColor(shapeSelectColorValue)
         }
         poopShapeNormal.setOnClickListener {
             selectShape = PoopShape.NORMAL
             resetSelectShapeButton()
-            poopShapeNormal.setBackgroundColor(colorValue)
+            poopShapeNormal.setBackgroundColor(shapeSelectColorValue)
         }
         poopShapeLiquid.setOnClickListener {
             selectShape = PoopShape.SEMILIQUID
             resetSelectShapeButton()
-            poopShapeLiquid.setBackgroundColor(colorValue)
+            poopShapeLiquid.setBackgroundColor(shapeSelectColorValue)
         }
         poopShapeSemiLiquid.setOnClickListener {
             selectShape = PoopShape.LIQUID
             resetSelectShapeButton()
-            poopShapeSemiLiquid.setBackgroundColor(colorValue)
+            poopShapeSemiLiquid.setBackgroundColor(shapeSelectColorValue)
         }
     }
 
@@ -303,6 +328,66 @@ class InputPoopFragment : Fragment() {
         selectGreenButton.alpha = 1f
         selectRedButton.alpha = 1f
         selectGrayishWhiteButton.alpha = 1f
+    }
+
+    /**
+     * 新規用PoopUIセット
+     */
+    private fun setUpInitPoopUI() {
+        // 色
+        selectBrownButton.alpha = 0.5f
+
+        // 形
+        poopShapeNormal.setBackgroundColor(shapeSelectColorValue)
+    }
+
+    /**
+     * 更新用PoopUIセット
+     */
+    private fun setUpUpdatePoopUI(poop: Poop) {
+
+        // 時間
+        val calendar = Calendar.getInstance()
+        calendar.time = poop.createdAt
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+        timePicker.hour = hour
+        timePicker.minute = minute
+
+        // 色
+        var poopColor = PoopColor.getPoopColor(poop.color)
+        selectColor = poopColor
+        resetSelectColorButton()
+        when(poopColor) {
+            PoopColor.UNDEFINED -> selectYellowishBrownButton.alpha = 0.5f
+            PoopColor.YELLOWISHBROWN -> selectYellowishBrownButton.alpha = 0.5f
+            PoopColor.YELLOW -> selectYellowButton.alpha = 0.5f
+            PoopColor.BROWN -> selectBrownButton.alpha = 0.5f
+            PoopColor.DARKBROWN -> selectDarkBrownButton.alpha = 0.5f
+            PoopColor.BLACK -> selectBlackButton.alpha = 0.5f
+            PoopColor.GREEN -> selectGreenButton.alpha = 0.5f
+            PoopColor.RED -> selectRedButton.alpha = 0.5f
+            PoopColor.GRAYISHWHITE -> selectGrayishWhiteButton.alpha = 0.5f
+        }
+
+        // 形
+        var poopShape = PoopShape.getPoopShape(poop.shape)
+        selectShape = poopShape
+        when(poopShape) {
+            PoopShape.UNDEFINED -> poopShapeKorokoro.setBackgroundColor(shapeSelectColorValue)
+            PoopShape.KOROKORO -> poopShapeKorokoro.setBackgroundColor(shapeSelectColorValue)
+            PoopShape.SEMIKOROKORO -> poopShapeSemiKorokoro.setBackgroundColor(shapeSelectColorValue)
+            PoopShape.NORMAL -> poopShapeNormal.setBackgroundColor(shapeSelectColorValue)
+            PoopShape.SEMILIQUID -> poopShapeSemiLiquid.setBackgroundColor(shapeSelectColorValue)
+            PoopShape.LIQUID -> poopShapeLiquid.setBackgroundColor(shapeSelectColorValue)
+        }
+
+        // 量
+        volumeLabel.text = PoopVolume.getName(poop.volume)
+        volumeBar.progress = poop.volume
+
+        // Memo
+        memoText.setText(poop.memo)
     }
 
     /**

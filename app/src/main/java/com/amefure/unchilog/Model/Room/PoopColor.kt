@@ -42,10 +42,12 @@ enum class PoopColor(var id: Int) {
 
     abstract fun color(): Int
 
-
     companion object {
         fun getColor(id: Int): Int {
             return PoopColor.values().find { it.id == id }?.color() ?: R.color.ex_poop_black
+        }
+        fun getPoopColor(id: Int): PoopColor {
+            return PoopColor.values().find { it.id == id } ?: UNDEFINED
         }
     }
 

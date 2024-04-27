@@ -49,7 +49,7 @@ class RootRepository (context: Context) {
     }
 
 
-    // Poop取得
+    // Poop全て取得
     public fun fetchAllPoops(callback: (List<Poop>) -> Unit) {
         poopDao.fetchAllPoops()
             .subscribeOn(Schedulers.io())
@@ -62,6 +62,15 @@ class RootRepository (context: Context) {
 
     }
 
-
-
+    // Poop1つ取得
+    public fun fetchSinglePoop(id: Int, callback: (Poop) -> Unit) {
+        poopDao.fetchSinglePoop(id)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { poop ->
+                    callback(poop)
+                }
+            ).addTo(compositeDisposable)
+    }
 }

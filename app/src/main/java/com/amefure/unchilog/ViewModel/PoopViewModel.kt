@@ -17,7 +17,7 @@ class PoopViewModel (app: Application) : RootViewModel(app) {
     public val poops: LiveData<List<Poop>> = _poops
 
     /**
-     * Category取得
+     * Poops取得
      * MutableLiveDataに格納する
      */
     public fun fetchAllPoops() {
@@ -25,6 +25,19 @@ class PoopViewModel (app: Application) : RootViewModel(app) {
         viewModelScope.launch(Dispatchers.IO) {  // データ取得はIOスレッドで
             rootRepository.fetchAllPoops {
                 _poops.postValue(it.sortedBy { it.createdAt })  // 本来はDBやCacheから取得
+            }
+        }
+    }
+
+    /**
+     * Poop取得
+     * MutableLiveDataに格納する
+     */
+    public fun fetchSinglePoop(id: Int, callback: (Poop) -> Unit ) {
+        // データの取得は非同期で
+        viewModelScope.launch(Dispatchers.IO) {  // データ取得はIOスレッドで
+            rootRepository.fetchSinglePoop(id) {
+                callback(it)
             }
         }
     }

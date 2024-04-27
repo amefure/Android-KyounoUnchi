@@ -21,6 +21,9 @@ interface PoopDao {
     @Query("SELECT * FROM poop_table")
     fun fetchAllPoops(): Flowable<List<Poop>>
 
+    @Query("SELECT * FROM poop_table WHERE id = :id")
+    fun fetchSinglePoop(id: Int): Flowable<Poop>
+
     @Query("SELECT COUNT(*) FROM poop_table")
     fun getCount(): Int
 
