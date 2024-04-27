@@ -1,6 +1,22 @@
 <resources>
     <string name="app_name">UNCHILOG</string>
 
+    <!-- Mr Poop Message -->
+    <string name="poop_message_1">順調♪順調♪</string>
+    <string name="poop_message_2">バナナうんちは良いうんち！</string>
+    <string name="poop_message_3">ぶりっ♪</string>
+    <string name="poop_message_4">健康うんちは75％が水分なんだって</string>
+    <string name="poop_message_5">1日に150~250g出すのがベスト！</string>
+    <string name="poop_message_6">うんちが%@日出てないよ！</string>
+    <string name="poop_message_7">今日は何回でた？</string>
+    <string name="poop_message_8">今日も良い1日になりますように</string>
+    <string name="poop_message_9">記録を続けていてすごい！</string>
+    <string name="poop_message_10">自分のうんちを把握するのは大事だよ</string>
+    <string name="poop_message_11">今日のあなたは大吉だよ</string>
+    <string name="poop_message_12">お腹を冷やさないようにね</string>
+
+    <string name="poop_message_nothing">うんちの記録がありません。</string>
+
     <!-- Dialog -->
     <string name="dialog_title_notice">お知らせ</string>
     <string name="dialog_msg_success_entry_poop">うんちの記録を\n登録しました。</string>

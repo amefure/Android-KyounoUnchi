@@ -29,6 +29,19 @@
         app:layout_constraintTop_toBottomOf="@+id/include_header" />
 
     <include
+        android:id="@+id/include_message"
+        layout="@layout/component_poop_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/include_footer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/include_header"
+        app:layout_constraintVertical_bias="0.50" />
+
+    <include
         android:id="@+id/include_footer"
         layout="@layout/layout_footer"
         android:layout_width="match_parent"

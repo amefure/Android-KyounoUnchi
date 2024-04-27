@@ -16,6 +16,7 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.Space
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.MenuRes
 import androidx.annotation.RequiresApi
@@ -62,6 +63,38 @@ class PoopCalendarFragment : Fragment(){
         setUpHeaderAction(view)
         setUpFooterAction(view)
         setUpRecycleView(view)
+        setUpPoopMessage(view)
+
+    }
+
+    /**
+     * Mr Poopのメッセージ格納
+     */
+    public fun setUpPoopMessage(view: View) {
+        val messageLayout: ConstraintLayout = view.findViewById(R.id.include_message)
+        val messagText: TextView = messageLayout.findViewById(R.id.message_text)
+
+        messageLayout.setOnClickListener {
+            val randomValue = (1..12).random()
+            val msg =  when(randomValue) {
+                1 -> getString(R.string.poop_message_1)
+                2 -> getString(R.string.poop_message_2)
+                3 -> getString(R.string.poop_message_3)
+                4 -> getString(R.string.poop_message_4)
+                5 -> getString(R.string.poop_message_5)
+                6 -> getString(R.string.poop_message_1) // getString(R.string.poop_message_6)
+                7 -> getString(R.string.poop_message_7)
+                8 -> getString(R.string.poop_message_8)
+                9 -> getString(R.string.poop_message_9)
+                10 -> getString(R.string.poop_message_10)
+                11 -> getString(R.string.poop_message_11)
+                12 -> getString(R.string.poop_message_12)
+                else -> getString(R.string.poop_message_1)
+            }
+            messagText.setText(msg)
+        }
+        // 初回のみクリックしたことにする
+        messageLayout.callOnClick()
     }
 
     /**

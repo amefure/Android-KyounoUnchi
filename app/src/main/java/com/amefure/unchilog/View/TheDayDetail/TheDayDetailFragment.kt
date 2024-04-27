@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.PopupMenu
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.viewModels
@@ -89,8 +90,8 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
     private fun setUpRecycleView(view: View) {
         viewModel.poops.observe(viewLifecycleOwner) { poops ->
             val filteringList = poops.filter  { DateFormatUtility.isSameDate(it.createdAt, date) }
+            val recyclerView: RecyclerView = view.findViewById(R.id.poop_recycle_layout)
             if (filteringList.size != 0) {
-                val recyclerView: RecyclerView = view.findViewById(R.id.poop_recycle_layout)
                 recyclerView.layoutManager = LinearLayoutManager(this.requireContext())
                 recyclerView.addItemDecoration(
                     DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
@@ -107,7 +108,11 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
                 recyclerView.addOnItemTouchListener(itemTouchListener)
                 recyclerView.adapter = PoopRowAdapter(filteringList, this.requireContext())
             } else {
-
+                recyclerView.visibility = View.GONE
+                val messageLayout: ConstraintLayout = view.findViewById(R.id.include_message)
+                messageLayout.visibility = View.VISIBLE
+                val messagText: TextView = messageLayout.findViewById(R.id.message_text)
+                messagText.setText(getString(R.string.poop_message_nothing))
             }
         }
     }
