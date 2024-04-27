@@ -5,6 +5,7 @@ class AppArgKey {
 
         // Input
         public const val ARG_INPUT_THE_DAY_KEY = "ARG_INPUT_THE_DAY_KEY"
+        public const val ARG_INPUT_POOP_ID_KEY = "ARG_INPUT_POOP_ID_KEY"
 
         // TheDayDetail
         public const val ARG_THE_DAY_KEY = "ARG_THE_DAY_KEY"

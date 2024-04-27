@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -64,12 +65,14 @@ class InputPoopFragment : Fragment() {
     private lateinit var memoText: EditText
 
     private var dateStr: Long = 0
+    private var poopId: Int? = null
     private var date: Date = Date()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             dateStr = it.getLong(AppArgKey.ARG_INPUT_THE_DAY_KEY)
+            poopId = it.getInt(AppArgKey.ARG_INPUT_POOP_ID_KEY)
             date = Date(dateStr)
         }
     }
@@ -83,6 +86,8 @@ class InputPoopFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        Log.e("---", poopId.toString())
 
         timePicker = view.findViewById(R.id.timePicker)
         memoText = view.findViewById(R.id.memo_edit)
@@ -319,6 +324,15 @@ class InputPoopFragment : Fragment() {
             InputPoopFragment().apply {
                 arguments = Bundle().apply {
                     putLong(AppArgKey.ARG_INPUT_THE_DAY_KEY, date)
+                }
+            }
+
+        @JvmStatic
+        fun newEditInstance(date: Long, poopId: Int) =
+            InputPoopFragment().apply {
+                arguments = Bundle().apply {
+                    putLong(AppArgKey.ARG_INPUT_THE_DAY_KEY, date)
+                    putInt(AppArgKey.ARG_INPUT_POOP_ID_KEY, poopId)
                 }
             }
     }

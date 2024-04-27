@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -17,6 +18,7 @@ import com.amefure.unchilog.Model.Room.Poop
 import com.amefure.unchilog.Model.Room.PoopColor
 import com.amefure.unchilog.Model.Room.PoopShape
 import com.amefure.unchilog.Model.Room.PoopVolume
+import com.amefure.unchilog.Model.SCCalender.SCDate
 import com.amefure.unchilog.R
 import com.amefure.unchilog.Repository.SCCalender.shortSymbols
 import com.amefure.unchilog.Utility.DateFormatUtility
@@ -32,6 +34,15 @@ class PoopRowAdapter(
     override fun getItemCount(): Int = _poopList.size
 
     private val df = DateFormatUtility(format = "HH:mm")
+
+    public fun getItemAtPosition(position: Int) : Poop? {
+        if (position < 0 || position >= _poopList.size) {
+            return null
+        }
+        val item = _poopList[position]
+        return item
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         return MainViewHolder(
             // XMLレイアウトファイルからViewオブジェクトを作成
@@ -57,7 +68,6 @@ class PoopRowAdapter(
         // Memo
         holder.poopMemo.text = poop.memo
     }
-
     class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val poopTime: TextView = itemView.findViewById(R.id.poop_time)
         val poopColor: View = itemView.findViewById(R.id.poop_color)

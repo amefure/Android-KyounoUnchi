@@ -1,14 +1,23 @@
 package com.amefure.unchilog.View.Calendar
 
+import android.app.Activity
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.view.ActionMode
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.PopupMenu
 import android.widget.Space
+import android.widget.Toast
+import androidx.annotation.MenuRes
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.viewModels
@@ -33,7 +42,7 @@ import java.util.Calendar
 import java.util.Date
 
 @RequiresApi(Build.VERSION_CODES.O)
-class PoopCalendarFragment : Fragment() {
+class PoopCalendarFragment : Fragment(){
 
     // カレンダーロジックリポジトリ
     private var sccalenderRepository = SCCalenderRepository()
@@ -55,7 +64,6 @@ class PoopCalendarFragment : Fragment() {
         setUpRecycleView(view)
     }
 
-
     /**
      * グリッドレイアウトリサイクルビューセットアップ
      * 1.月の日付
@@ -71,11 +79,14 @@ class PoopCalendarFragment : Fragment() {
                         GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
                     val itemTouchListener = TheDayTouchListener()
                     itemTouchListener.setOnTappedListener(
-                        object : TheDayTouchListener.onTappedListener{
+                        object : TheDayTouchListener.onTappedListener {
                             override fun onTapped(scdate: SCDate) {
                                 scdate.date?.let { date ->
                                     parentFragmentManager.beginTransaction().apply {
-                                        add(R.id.main_frame, TheDayDetailFragment.newInstance(date.time))
+                                        add(
+                                            R.id.main_frame,
+                                            TheDayDetailFragment.newInstance(date.time)
+                                        )
                                         addToBackStack(null)
                                         commit()
                                     }
@@ -180,7 +191,7 @@ class PoopCalendarFragment : Fragment() {
             val c = Calendar.getInstance()
             val year = c.get(Calendar.YEAR)
             val month = c.get(Calendar.MONTH) + 1
-            sccalenderRepository.moveYearAndMonthCalendar(year,month)
+            sccalenderRepository.moveYearAndMonthCalendar(year, month)
         }
 
         val leftButton: ImageButton = header.findViewById(R.id.left_button)

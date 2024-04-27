@@ -4,10 +4,12 @@ import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.PopupMenu
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.viewModels
@@ -17,13 +19,17 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amefure.unchilog.Model.Key.AppArgKey
+import com.amefure.unchilog.Model.Room.Poop
+import com.amefure.unchilog.Model.SCCalender.SCDate
 import com.amefure.unchilog.R
 import com.amefure.unchilog.Utility.DateFormatUtility
 import com.amefure.unchilog.View.Calendar.RecycleViewSetting.PoopCalendarAdapter
+import com.amefure.unchilog.View.Calendar.RecycleViewSetting.TheDayTouchListener
 import com.amefure.unchilog.View.Calendar.RecycleViewSetting.WeekAdapter
 import com.amefure.unchilog.View.Dialog.CustomNotifyDialogFragment
 import com.amefure.unchilog.View.InputPoopFragment
 import com.amefure.unchilog.View.TheDayDetail.RecycleViewSetting.PoopRowAdapter
+import com.amefure.unchilog.View.TheDayDetail.RecycleViewSetting.PoopRowTouchListener
 import com.amefure.unchilog.ViewModel.PoopViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,10 +37,12 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 
-class TheDayDetailFragment : Fragment() {
+class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
 
     private var dateStr: Long = 0
     private var date: Date = Date()
+
+    private var selectPoop: Poop? = null
 
     private val viewModel: PoopViewModel by viewModels()
 
@@ -62,6 +70,18 @@ class TheDayDetailFragment : Fragment() {
     }
 
     /**
+     * ポップアップメニューを表示する
+     * [view]には表示したいViewを渡す
+     */
+    private fun showPopupMenu(view: View) {
+        val popupMenu = PopupMenu(context, view)
+        popupMenu.inflate(R.menu.poop_row_menu)
+        popupMenu.setOnMenuItemClickListener(this)
+        popupMenu.show()
+    }
+
+
+    /**
      * グリッドレイアウトリサイクルビューセットアップ
      * 1.月の日付
      * 2.曜日
@@ -74,9 +94,23 @@ class TheDayDetailFragment : Fragment() {
             recyclerView.addItemDecoration(
                 DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
             )
+            val itemTouchListener = PoopRowTouchListener()
+            itemTouchListener.setOnTappedListener(
+                object : PoopRowTouchListener.onTappedListener {
+                    override fun onTapped(poop: Poop, rowView: View) {
+                        selectPoop = poop
+                        showPopupMenu(rowView)
+                    }
+                }
+            )
+            recyclerView.addOnItemTouchListener(itemTouchListener)
+
             recyclerView.adapter = PoopRowAdapter(filteringList, this.requireContext())
+
         }
     }
+
+
 
     /**
      * フッターボタンセットアップ
@@ -88,7 +122,7 @@ class TheDayDetailFragment : Fragment() {
         entryPoopButton.setOnClickListener {
             // モードによって切り替え
             if (false) {
-                viewModel.insertPoop(createdAt = Date())
+                viewModel.insertPoop(createdAt = date)
                 val dialog = CustomNotifyDialogFragment.newInstance(
                     title = getString(R.string.dialog_title_notice),
                     msg = getString(R.string.dialog_msg_success_entry_poop),
@@ -98,7 +132,7 @@ class TheDayDetailFragment : Fragment() {
                 dialog.show(parentFragmentManager, "SuccessEntryPoopDialog")
             } else {
                 parentFragmentManager.beginTransaction().apply {
-                    add(R.id.main_frame, InputPoopFragment())
+                    add(R.id.main_frame, InputPoopFragment.newInstance(dateStr))
                     addToBackStack(null)
                     commit()
                 }
@@ -119,6 +153,7 @@ class TheDayDetailFragment : Fragment() {
         headerTitleButton.text = df.getString(date)
 
         val leftButton: ImageButton = header.findViewById(R.id.left_button)
+        leftButton.isEnabled = true
         leftButton.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
@@ -126,6 +161,44 @@ class TheDayDetailFragment : Fragment() {
         val rightButton: ImageButton = header.findViewById(R.id.right_button)
         rightButton.setImageDrawable(null)
         rightButton.isEnabled = false
+    }
+
+    /**
+     *  メニューアイテムが選択された時の処理
+     */
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.menu_edit -> {
+                val poop = selectPoop ?:return true
+                parentFragmentManager.beginTransaction().apply {
+                    add(R.id.main_frame, InputPoopFragment.newEditInstance(dateStr, poop.id))
+                    addToBackStack(null)
+                    commit()
+                }
+                return true
+            }
+            R.id.menu_delete -> {
+                val poop = selectPoop ?:return true
+                val dialog = CustomNotifyDialogFragment.newInstance(
+                    title = getString(R.string.dialog_title_notice),
+                    msg = getString(R.string.dialog_msg_delete_poop),
+                    showPositive = true,
+                    showNegative = false
+                )
+                dialog.setOnTappedListner(
+                    object : CustomNotifyDialogFragment.onTappedListner {
+                        override fun onNegativeButtonTapped() { }
+
+                        override fun onPositiveButtonTapped() {
+                            viewModel.deletePoop(poop)
+                        }
+                    }
+                )
+                dialog.show(parentFragmentManager, "DeletePoopDialog")
+                return true
+            }
+            else -> false
+        }
     }
 
     /**
