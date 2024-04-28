@@ -11,6 +11,22 @@ class PoopCalendarViewModel(app: Application) : RootViewModel(app) {
     private val dataStoreRepository = DataStoreRepository(app.applicationContext)
 
     /**
+     * インタースティシャルカウント保存
+     */
+    public fun saveInterstitialCount(count: Int) {
+        viewModelScope.launch {
+            dataStoreRepository.saveInterstitialCount(count)
+        }
+    }
+
+    /**
+     * インタースティシャルカウント観測
+     */
+    public fun observeInterstitialCount(): Flow<Int?> {
+        return dataStoreRepository.observeInterstitialCount()
+    }
+
+    /**
      * 登録モード観測
      */
     public fun observeEntryMode(): Flow<Int?> {

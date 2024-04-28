@@ -20,6 +20,8 @@ import com.amefure.unchilog.R
 import com.amefure.unchilog.View.AppLock.AppLockFragment
 import com.amefure.unchilog.View.Dialog.CustomNotifyDialogFragment
 import com.amefure.unchilog.ViewModel.SettingViewModel
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -37,6 +39,10 @@ class SettingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // 広告の読み込み
+        var adView: AdView = view.findViewById(R.id.adView)
+        adView.loadAd(AdRequest.Builder().build())
 
         setUpHeaderAction(view)
 

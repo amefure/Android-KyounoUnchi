@@ -35,6 +35,8 @@ import com.amefure.unchilog.View.TheDayDetail.RecycleViewSetting.PoopRowAdapter
 import com.amefure.unchilog.View.TheDayDetail.RecycleViewSetting.PoopRowTouchListener
 import com.amefure.unchilog.ViewModel.PoopViewModel
 import com.amefure.unchilog.ViewModel.TheDayDetailViewModel
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -72,6 +74,11 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // 広告の読み込み
+        var adView: AdView = view.findViewById(R.id.adView)
+        adView.loadAd(AdRequest.Builder().build())
+
         poopViewModel.fetchAllPoops()
         setUpHeaderAction(view)
         setUpFooterAction(view)

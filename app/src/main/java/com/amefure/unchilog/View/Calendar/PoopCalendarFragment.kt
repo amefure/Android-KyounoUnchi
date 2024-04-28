@@ -31,6 +31,10 @@ import com.amefure.unchilog.View.Setting.SettingFragment
 import com.amefure.unchilog.View.TheDayDetail.TheDayDetailFragment
 import com.amefure.unchilog.ViewModel.PoopCalendarViewModel
 import com.amefure.unchilog.ViewModel.PoopViewModel
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -39,6 +43,9 @@ import java.util.Date
 
 @RequiresApi(Build.VERSION_CODES.O)
 class PoopCalendarFragment : Fragment(){
+
+    private var mInterstitialAd: InterstitialAd? = null
+    private var mInterstitialCount: Int = 0
 
     // カレンダーロジックリポジトリ
     private lateinit var sccalenderRepository: SCCalenderRepository
@@ -57,6 +64,10 @@ class PoopCalendarFragment : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        loadInterstitial()
+        observeInterstitialCount()
+
         sccalenderRepository = SCCalenderRepository()
         poopViewModel.fetchAllPoops()
 
@@ -128,6 +139,16 @@ class PoopCalendarFragment : Fragment(){
                         object : TheDayTouchListener.onTappedListener {
                             override fun onTapped(scdate: SCDate) {
                                 scdate.date?.let { date ->
+                                    if (mInterstitialCount >= 5) {
+                                        mInterstitialCount = 0
+                                        viewModel.saveInterstitialCount(0)
+                                        if (mInterstitialAd != null) {
+                                            mInterstitialAd?.show(this@PoopCalendarFragment.requireActivity())
+                                        }
+                                    } else {
+                                        mInterstitialCount = mInterstitialCount + 1
+                                        viewModel.saveInterstitialCount(mInterstitialCount)
+                                    }
                                     parentFragmentManager.beginTransaction().apply {
                                         add(
                                             R.id.main_frame,
@@ -257,5 +278,34 @@ class PoopCalendarFragment : Fragment(){
                 }
             }
         }
+    }
+
+    /**
+     * インタースティシャルカウント観測
+     */
+    private fun observeInterstitialCount() {
+        lifecycleScope.launch {
+            viewModel.observeInterstitialCount().collect {
+                mInterstitialCount = it ?: 0
+            }
+        }
+    }
+
+    /**
+     * AdMobインタースティシャル読み込み
+     */
+    private fun loadInterstitial() {
+
+        var adRequest = AdRequest.Builder().build()
+
+        InterstitialAd.load(this.requireContext(),"ca-app-pub-3940256099942544/1033173712", adRequest, object : InterstitialAdLoadCallback() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                mInterstitialAd = null
+            }
+
+            override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                mInterstitialAd = interstitialAd
+            }
+        })
     }
 }
