@@ -24,5 +24,15 @@ class DateFormatUtility(format: String = "yyyy年MM月dd日") {
                     cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH) &&
                     cal1.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH)
         }
+
+        public fun getSetTimeDate(date: Date, hour: Int, minute: Int): Date {
+            var now = date
+            val calendar = Calendar.getInstance()
+            calendar.time = now
+            calendar.set(Calendar.HOUR_OF_DAY, hour)
+            calendar.set(Calendar.MINUTE, minute)
+            val updatedDate = calendar.time
+            return updatedDate
+        }
     }
 }

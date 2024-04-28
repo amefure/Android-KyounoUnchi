@@ -84,7 +84,7 @@ class PoopCalendarFragment : Fragment(){
      */
     public fun setUpPoopMessage(view: View) {
         val messageLayout: ConstraintLayout = view.findViewById(R.id.include_message)
-        val messagText: TextView = messageLayout.findViewById(R.id.message_text)
+        val messageText: TextView = messageLayout.findViewById(R.id.message_text)
 
         messageLayout.setOnClickListener {
             val randomValue = (1..12).random()
@@ -103,7 +103,7 @@ class PoopCalendarFragment : Fragment(){
                 12 -> getString(R.string.poop_message_12)
                 else -> getString(R.string.poop_message_1)
             }
-            messagText.setText(msg)
+            messageText.setText(msg)
         }
         // 初回のみクリックしたことにする
         messageLayout.callOnClick()
@@ -115,11 +115,12 @@ class PoopCalendarFragment : Fragment(){
      * 2.曜日
      */
     private fun setUpRecycleView(view: View) {
+        val recyclerView: RecyclerView = view.findViewById(R.id.day_recycle_layout)
+        val weekRecyclerView: RecyclerView = view.findViewById(R.id.week_recycle_layout)
         poopViewModel.poops.observe(viewLifecycleOwner) { poops ->
             // 月の日付更新
             lifecycleScope.launch(Dispatchers.Main) {
                 sccalenderRepository.currentDates.collect { scdate ->
-                    val recyclerView: RecyclerView = view.findViewById(R.id.day_recycle_layout)
                     recyclerView.layoutManager =
                         GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
                     val itemTouchListener = TheDayTouchListener()
@@ -147,10 +148,9 @@ class PoopCalendarFragment : Fragment(){
             // 曜日グリッドレイアウト更新
             lifecycleScope.launch(Dispatchers.Main) {
                 sccalenderRepository.dayOfWeekList.collect { week ->
-                    val recyclerView: RecyclerView = view.findViewById(R.id.week_recycle_layout)
-                    recyclerView.layoutManager =
+                    weekRecyclerView.layoutManager =
                         GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
-                    recyclerView.adapter = WeekAdapter(week, this@PoopCalendarFragment.requireContext())
+                    weekRecyclerView.adapter = WeekAdapter(week, this@PoopCalendarFragment.requireContext())
                 }
             }
         }

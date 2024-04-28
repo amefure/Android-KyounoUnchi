@@ -1,6 +1,7 @@
 package com.amefure.unchilog.View.Setting
 
 import android.content.res.ColorStateList
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -26,6 +29,8 @@ class SelecteModeFragment : Fragment() {
 
     private lateinit var simpleButton: Button
     private lateinit var detailButton: Button
+    private lateinit var modeDescText: TextView
+    private lateinit var modeDemoImage: ImageView
 
     private var tintSelectList: ColorStateList? = null
     private var textSelectColor: Int = 0
@@ -47,6 +52,8 @@ class SelecteModeFragment : Fragment() {
         simpleButton = view.findViewById(R.id.simple_button)
         detailButton = view.findViewById(R.id.detail_button)
         // toggleGroup.check(simpleButton.id) 選択状態にする
+        modeDescText = view.findViewById(R.id.select_mode_desc)
+        modeDemoImage = view.findViewById(R.id.select_mode_image)
 
         // 選択状態の背景色と文字色
         tintSelectList = ContextCompat.getColorStateList(this.requireContext(), R.color.ex_text)
@@ -111,6 +118,10 @@ class SelecteModeFragment : Fragment() {
 
         detailButton.backgroundTintList = tintUnSelectList
         detailButton.setTextColor(textUnSelectColor)
+
+        modeDescText.setText(getString(R.string.simple_mode_desc))
+        val demoImage: Drawable? = ContextCompat.getDrawable(this.requireContext(), R.drawable.ss_simple_mode)
+        modeDemoImage.setImageDrawable(demoImage)
     }
 
     /**
@@ -122,6 +133,10 @@ class SelecteModeFragment : Fragment() {
 
         simpleButton.backgroundTintList = tintUnSelectList
         simpleButton.setTextColor(textUnSelectColor)
+
+        modeDescText.setText(getString(R.string.detail_mode_desc))
+        val demoImage: Drawable? = ContextCompat.getDrawable(this.requireContext(), R.drawable.ss_detail_mode)
+        modeDemoImage.setImageDrawable(demoImage)
     }
 
     /**

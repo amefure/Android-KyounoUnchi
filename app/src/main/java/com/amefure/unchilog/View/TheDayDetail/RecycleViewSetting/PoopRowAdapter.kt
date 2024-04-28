@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.annotation.RequiresApi
@@ -52,21 +53,25 @@ class PoopRowAdapter(
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val poop = _poopList[position]
-
         // 時間
         holder.poopTime.text = df.getString(poop.createdAt)
-        // 色
-        val colorID = PoopColor.getColor(poop.color)
-        holder.poopColor.backgroundTintList =
-            ContextCompat.getColorStateList(context, colorID)
-        // 硬い
-        val imageId = PoopShape.getDrawable(poop.shape)
-        val checkIcon: Drawable? = ContextCompat.getDrawable(context, imageId)
-        holder.poopShape.setImageDrawable(checkIcon)
-        // 量
-        holder.poopVolume.text = PoopVolume.getName(poop.volume)
-        // Memo
-        holder.poopMemo.text = poop.memo
+        if (poop.shape == 0) {
+            holder.poopRowLayout.visibility = View.GONE
+            holder.noPoopMessage.visibility = View.VISIBLE
+        } else {
+            // 色
+            val colorID = PoopColor.getColor(poop.color)
+            holder.poopColor.backgroundTintList =
+                ContextCompat.getColorStateList(context, colorID)
+            // 硬い
+            val imageId = PoopShape.getDrawable(poop.shape)
+            val checkIcon: Drawable? = ContextCompat.getDrawable(context, imageId)
+            holder.poopShape.setImageDrawable(checkIcon)
+            // 量
+            holder.poopVolume.text = PoopVolume.getName(poop.volume)
+            // Memo
+            holder.poopMemo.text = poop.memo
+        }
     }
     class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val poopTime: TextView = itemView.findViewById(R.id.poop_time)
@@ -74,5 +79,8 @@ class PoopRowAdapter(
         val poopShape: ImageView = itemView.findViewById(R.id.poop_shape)
         val poopVolume: TextView = itemView.findViewById(R.id.poop_volume)
         val poopMemo: TextView = itemView.findViewById(R.id.poop_memo)
+
+        val poopRowLayout: LinearLayout = itemView.findViewById(R.id.poop_row_layout)
+        val noPoopMessage: TextView = itemView.findViewById(R.id.no_poop_message)
     }
 }

@@ -2,6 +2,7 @@ package com.amefure.unchilog.View.TheDayDetail
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -36,6 +37,7 @@ import com.amefure.unchilog.ViewModel.TheDayDetailViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 
 
@@ -49,6 +51,8 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
 
     private val poopViewModel: PoopViewModel by viewModels()
     private val viewModel: TheDayDetailViewModel by viewModels()
+
+    private var popupMenu: PopupMenu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,10 +88,12 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
      * [view]には表示したいViewを渡す
      */
     private fun showPopupMenu(view: View) {
-        val popupMenu = PopupMenu(context, view)
-        popupMenu.inflate(R.menu.poop_row_menu)
-        popupMenu.setOnMenuItemClickListener(this)
-        popupMenu.show()
+        popupMenu = PopupMenu(context, view)
+        popupMenu?.let {
+            it.inflate(R.menu.poop_row_menu)
+            it.setOnMenuItemClickListener(this)
+            it.show()
+        }
     }
 
 
@@ -97,10 +103,13 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
      * 2.曜日
      */
     private fun setUpRecycleView(view: View) {
+        val recyclerView: RecyclerView = view.findViewById(R.id.poop_recycle_layout)
+        val messageLayout: ConstraintLayout = view.findViewById(R.id.include_message)
         poopViewModel.poops.observe(viewLifecycleOwner) { poops ->
             val filteringList = poops.filter  { DateFormatUtility.isSameDate(it.createdAt, date) }
-            val recyclerView: RecyclerView = view.findViewById(R.id.poop_recycle_layout)
             if (filteringList.size != 0) {
+                recyclerView.visibility = View.VISIBLE
+                messageLayout.visibility = View.GONE
                 recyclerView.layoutManager = LinearLayoutManager(this.requireContext())
                 recyclerView.addItemDecoration(
                     DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
@@ -118,7 +127,6 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
                 recyclerView.adapter = PoopRowAdapter(filteringList, this.requireContext())
             } else {
                 recyclerView.visibility = View.GONE
-                val messageLayout: ConstraintLayout = view.findViewById(R.id.include_message)
                 messageLayout.visibility = View.VISIBLE
                 val messagText: TextView = messageLayout.findViewById(R.id.message_text)
                 messagText.setText(getString(R.string.poop_message_nothing))
@@ -138,7 +146,11 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
         entryPoopButton.setOnClickListener {
             // モードによって切り替え
             if (selectMode == 0) {
-                poopViewModel.insertPoop(createdAt = date)
+                val calendar = Calendar.getInstance()
+                val hour = calendar.get(Calendar.HOUR_OF_DAY)
+                val minute = calendar.get(Calendar.MINUTE)
+                val createdAt = DateFormatUtility.getSetTimeDate(date, hour, minute)
+                poopViewModel.insertPoop(createdAt = createdAt)
                 val dialog = CustomNotifyDialogFragment.newInstance(
                     title = getString(R.string.dialog_title_notice),
                     msg = getString(R.string.dialog_msg_success_entry_poop),
@@ -185,6 +197,7 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
     override fun onMenuItemClick(item: MenuItem?): Boolean {
         return when (item?.itemId) {
             R.id.menu_edit -> {
+                popupMenu?.let { it.dismiss() }
                 val poop = selectPoop ?:return true
                 parentFragmentManager.beginTransaction().apply {
                     add(R.id.main_frame, InputPoopFragment.newEditInstance(dateStr, poop.id))
@@ -194,16 +207,19 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
                 return true
             }
             R.id.menu_delete -> {
+                popupMenu?.let { it.dismiss() }
                 val poop = selectPoop ?:return true
                 val dialog = CustomNotifyDialogFragment.newInstance(
                     title = getString(R.string.dialog_title_notice),
                     msg = getString(R.string.dialog_msg_delete_poop),
                     showPositive = true,
-                    showNegative = false
+                    showNegative = true
                 )
                 dialog.setOnTappedListner(
                     object : CustomNotifyDialogFragment.onTappedListner {
-                        override fun onNegativeButtonTapped() { }
+                        override fun onNegativeButtonTapped() {
+                            dialog.dismiss()
+                        }
 
                         override fun onPositiveButtonTapped() {
                             poopViewModel.deletePoop(poop)
@@ -211,6 +227,10 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
                     }
                 )
                 dialog.show(parentFragmentManager, "DeletePoopDialog")
+                return true
+            }
+            R.id.menu_close -> {
+                popupMenu?.let { it.dismiss() }
                 return true
             }
             else -> false

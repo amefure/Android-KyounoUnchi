@@ -26,6 +26,7 @@ import com.amefure.unchilog.Model.Room.PoopColor
 import com.amefure.unchilog.Model.Room.PoopShape
 import com.amefure.unchilog.Model.Room.PoopVolume
 import com.amefure.unchilog.R
+import com.amefure.unchilog.Utility.DateFormatUtility
 import com.amefure.unchilog.View.Dialog.CustomNotifyDialogFragment
 import com.amefure.unchilog.View.TheDayDetail.TheDayDetailFragment
 import com.amefure.unchilog.ViewModel.PoopViewModel
@@ -144,15 +145,7 @@ class InputPoopFragment : Fragment() {
     private fun registerAction() {
         closedKeyBoard()
 
-        // 現在の日付の時間をTimePickerで選択したものに変更
-        var now = date
-        val calendar = Calendar.getInstance()
-        calendar.time = now
-        val hour = timePicker.hour
-        val minute = timePicker.minute
-        calendar.set(Calendar.HOUR_OF_DAY, hour)
-        calendar.set(Calendar.MINUTE, minute)
-        val updatedDate = calendar.time
+        val updatedDate = DateFormatUtility.getSetTimeDate(date, timePicker.hour, timePicker.minute)
 
         if (poop != null) {
             viewModel.updatePoop(
@@ -175,7 +168,7 @@ class InputPoopFragment : Fragment() {
 
         val dialog = CustomNotifyDialogFragment.newInstance(
             title = getString(R.string.dialog_title_notice),
-            msg =  poop?.let { getString(R.string.dialog_msg_success_entry_poop) } ?: getString(R.string.dialog_msg_update_entry_poop),
+            msg =  poop?.let { getString(R.string.dialog_msg_update_entry_poop) } ?: getString(R.string.dialog_msg_success_entry_poop),
             showPositive = true,
             showNegative = false,
         )

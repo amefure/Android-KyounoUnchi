@@ -24,10 +24,11 @@
         android:id="@+id/toggle_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/register_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginVertical="30dp"
+        android:layout_marginHorizontal="30dp"
+        app:layout_constraintTop_toBottomOf="@id/include_header"
         app:singleSelection="true">
 
         <Button
@@ -37,7 +38,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textColor="@color/white"
-
             android:text="シンプル" />
 
         <Button
@@ -47,11 +47,32 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textColor="@color/white"
-            
             android:text="詳細" />
 
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <TextView
+        android:id="@+id/select_mode_desc"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:text="@string/simple_mode_desc"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toggle_group" />
+
+    <ImageView
+        android:id="@+id/select_mode_image"
+        android:layout_width="wrap_content"
+        android:layout_height="300dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/ss_simple_mode"
+        app:layout_constraintBottom_toTopOf="@+id/register_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/select_mode_desc" />
 
 
     <Button

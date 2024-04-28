@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">UNCHILOG</string>
+    <string name="app_name">今日のうんち</string>
 
     <!-- Mr Poop Message -->
     <string name="poop_message_1">順調♪順調♪</string>
@@ -17,10 +17,14 @@
 
     <string name="poop_message_nothing">うんちの記録がありません。</string>
 
+    <!-- Select Mode -->
+    <string name="simple_mode_desc">「シンプルモード」に設定するとカレンダー画面の登録ボタン(赤枠)を押下した際に現在時刻でうんちの記録が登録されます。\n登録の際に細かい設定はできませんが、登録後から編集することは可能になっているので詳細モードと同じ内容を追記することが可能です。</string>
+    <string name="detail_mode_desc">「詳細モード」に設定するとカレンダー画面の登録ボタンを押下した際に以下の登録画面が表示され、うんちの色、形、量、MEMOなどを入力することが可能です。</string>
+
     <!-- Dialog -->
     <string name="dialog_title_notice">お知らせ</string>
-    <string name="dialog_msg_success_entry_poop">うんちの記録を\n登録しました。</string>
-    <string name="dialog_msg_update_entry_poop">うんちの記録を\n更新しました。</string>
+    <string name="dialog_msg_success_entry_poop">うんちの記録を登録しました。</string>
+    <string name="dialog_msg_update_entry_poop">うんちの記録を更新しました。</string>
     <string name="dialog_msg_delete_poop">うんちの記録を本当に削除しますか？</string>
     <string name="dialog_msg_failed_calendar_out_range">カレンダーの表示範囲外です。</string>
     <string name="dialog_msg_update_init_week">週始まりを「%1$s」に変更しました。</string>
