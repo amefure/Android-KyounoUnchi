@@ -88,6 +88,18 @@ class PoopCalendarFragment : Fragment(){
         setUpHeaderAction(view)
         setUpFooterAction(view)
         setUpPoopMessage(view)
+
+        val header: ConstraintLayout = view.findViewById(R.id.include_header)
+        val headerTitleButton: Button = header.findViewById(R.id.header_title_button)
+
+        // ヘッダーの[2024年4月]テキスト更新
+        lifecycleScope.launch(Dispatchers.Main) {
+            sccalenderRepository.currentYearAndMonth.collect {
+                it?.let {
+                    headerTitleButton.text = it.fullname
+                }
+            }
+        }
     }
 
     /**
