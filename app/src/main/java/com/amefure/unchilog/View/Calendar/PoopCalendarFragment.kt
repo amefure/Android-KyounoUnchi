@@ -60,10 +60,6 @@ class PoopCalendarFragment : Fragment(){
         sccalenderRepository = SCCalenderRepository()
         poopViewModel.fetchAllPoops()
 
-        setUpHeaderAction(view)
-        setUpFooterAction(view)
-        setUpPoopMessage(view)
-
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.observeInitWeek().collect { week ->
                 val dayOfWeek = week.toString().toDayOfWeek()
@@ -77,6 +73,10 @@ class PoopCalendarFragment : Fragment(){
                 selectMode = mode ?: 0
             }
         }
+
+        setUpHeaderAction(view)
+        setUpFooterAction(view)
+        setUpPoopMessage(view)
     }
 
     /**

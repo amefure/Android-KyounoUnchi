@@ -1,5 +1,6 @@
 package com.amefure.unchilog.View.TheDayDetail
 
+import android.app.AlertDialog
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -227,6 +228,16 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
                     }
                 )
                 dialog.show(parentFragmentManager, "DeletePoopDialog")
+                return true
+            }
+            R.id.menu_show_memo -> {
+                val poop = selectPoop ?:return true
+                val msg = if (poop.memo != "") poop.memo else "MEMOがありません。"
+                AlertDialog.Builder(this.requireContext())
+                    .setMessage(msg)
+                    .setPositiveButton("OK", { dialog, id ->
+                    })
+                    .show()
                 return true
             }
             R.id.menu_close -> {
