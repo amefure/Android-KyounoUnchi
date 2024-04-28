@@ -40,7 +40,7 @@
         android:paddingLeft="30dp"
         android:scaleType="centerCrop"
         android:src="@drawable/message_balloon"
-        android:text="お腹を冷やさないようにね"
+        android:text="@string/poop_message_nothing"
         android:textAlignment="center"
         android:textColor="@color/ex_text"
         android:textStyle="bold"

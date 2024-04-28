@@ -191,7 +191,7 @@ class TheDayDetailFragment : Fragment() , PopupMenu.OnMenuItemClickListener {
         val leftButton: ImageButton = header.findViewById(R.id.left_button)
         leftButton.isEnabled = true
         leftButton.setOnClickListener {
-            parentFragmentManager.popBackStack()
+            parentFragmentManager.beginTransaction().remove(this@TheDayDetailFragment).commit()
         }
 
         val rightButton: ImageButton = header.findViewById(R.id.right_button)
