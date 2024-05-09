@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+    android:id="@+id/the_day_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
+    android:layout_height="75dp"
     android:orientation="vertical"
-    android:background="@drawable/border_shape"
-    >
+    android:background="@drawable/border_shape">
 
     <TextView
         android:id="@+id/day_label"
-        android:textSize="20sp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/ex_circle_shape"
+        android:gravity="center_vertical"
         android:text="1"
-        android:textColor="@color/ex_text"
         android:textAlignment="center"
-        android:textStyle="bold"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:textColor="@color/ex_text"
+        android:textSize="14sp" />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/poop_count_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
         android:visibility="gone">
 
 

@@ -13,6 +13,12 @@ class DateFormatUtility(format: String = "yyyy年MM月dd日") {
     }
 
     companion object {
+        public fun getWeek(date: Date): Int {
+            // 曜日を取得するためにCalendarクラスを使用
+            val calendar = Calendar.getInstance()
+            calendar.time = date
+            return calendar.get(Calendar.DAY_OF_WEEK)
+        }
 
         public fun isSameDate(date1: Date, date2: Date): Boolean {
             val cal1 = Calendar.getInstance()

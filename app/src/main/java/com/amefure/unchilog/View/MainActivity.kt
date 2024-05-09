@@ -29,13 +29,11 @@ class MainActivity : AppCompatActivity() {
             if (result == null || result == 0) {
                 supportFragmentManager.beginTransaction().apply {
                     add(R.id.main_frame, PoopCalendarFragment())
-                    addToBackStack(null)
                     commit()
                 }
             } else {
                 supportFragmentManager.beginTransaction().apply {
                     add(R.id.main_frame, AppLockFragment())
-                    addToBackStack(null)
                     commit()
                 }
             }

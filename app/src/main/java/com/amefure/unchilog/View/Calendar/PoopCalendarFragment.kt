@@ -2,6 +2,7 @@ package com.amefure.unchilog.View.Calendar
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -54,6 +55,8 @@ class PoopCalendarFragment : Fragment(){
 
     private val poopViewModel: PoopViewModel by viewModels()
     private val viewModel: PoopCalendarViewModel by viewModels()
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var weekRecyclerView: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,6 +71,9 @@ class PoopCalendarFragment : Fragment(){
         loadInterstitial()
         observeInterstitialCount()
 
+        recyclerView = view.findViewById(R.id.day_recycle_layout)
+        weekRecyclerView = view.findViewById(R.id.week_recycle_layout)
+
         sccalenderRepository = SCCalenderRepository()
         poopViewModel.fetchAllPoops()
 
@@ -75,7 +81,7 @@ class PoopCalendarFragment : Fragment(){
             viewModel.observeInitWeek().collect { week ->
                 val dayOfWeek = week.toString().toDayOfWeek()
                 sccalenderRepository = SCCalenderRepository(dayOfWeek)
-                setUpRecycleView(view)
+                updateRecycleView()
             }
         }
 
@@ -88,18 +94,7 @@ class PoopCalendarFragment : Fragment(){
         setUpHeaderAction(view)
         setUpFooterAction(view)
         setUpPoopMessage(view)
-
-        val header: ConstraintLayout = view.findViewById(R.id.include_header)
-        val headerTitleButton: Button = header.findViewById(R.id.header_title_button)
-
-        // ヘッダーの[2024年4月]テキスト更新
-        lifecycleScope.launch(Dispatchers.Main) {
-            sccalenderRepository.currentYearAndMonth.collect {
-                it?.let {
-                    headerTitleButton.text = it.fullname
-                }
-            }
-        }
+        setUpRecycleView()
     }
 
     /**
@@ -137,52 +132,75 @@ class PoopCalendarFragment : Fragment(){
      * 1.月の日付
      * 2.曜日
      */
-    private fun setUpRecycleView(view: View) {
-        val recyclerView: RecyclerView = view.findViewById(R.id.day_recycle_layout)
-        val weekRecyclerView: RecyclerView = view.findViewById(R.id.week_recycle_layout)
+    private fun setUpRecycleView() {
+        recyclerView.layoutManager =
+            GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
+        val itemTouchListener = TheDayTouchListener()
+        itemTouchListener.setOnTappedListener(
+            object : TheDayTouchListener.onTappedListener {
+                override fun onTapped(scdate: SCDate) {
+                    scdate.date?.let { date ->
+                        if (mInterstitialCount >= 5) {
+                            mInterstitialCount = 0
+                            viewModel.saveInterstitialCount(0)
+                            if (mInterstitialAd != null) {
+                                mInterstitialAd?.show(this@PoopCalendarFragment.requireActivity())
+                            }
+                        } else {
+                            mInterstitialCount = mInterstitialCount + 1
+                            viewModel.saveInterstitialCount(mInterstitialCount)
+                        }
+                        Log.e("インスタンス化","実行")
+                        parentFragmentManager.beginTransaction().apply {
+                            add(
+                                R.id.main_frame,
+                                TheDayDetailFragment.newInstance(date.time)
+                            )
+                            commit()
+                        }
+                    }
+                }
+            }
+        )
+        recyclerView.addOnItemTouchListener(itemTouchListener)
+
+        weekRecyclerView.layoutManager =
+            GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
+
+
         poopViewModel.poops.observe(viewLifecycleOwner) { poops ->
             // 月の日付更新
             lifecycleScope.launch(Dispatchers.Main) {
                 sccalenderRepository.currentDates.collect { scdate ->
-                    recyclerView.layoutManager =
-                        GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
-                    val itemTouchListener = TheDayTouchListener()
-                    itemTouchListener.setOnTappedListener(
-                        object : TheDayTouchListener.onTappedListener {
-                            override fun onTapped(scdate: SCDate) {
-                                scdate.date?.let { date ->
-                                    if (mInterstitialCount >= 5) {
-                                        mInterstitialCount = 0
-                                        viewModel.saveInterstitialCount(0)
-                                        if (mInterstitialAd != null) {
-                                            mInterstitialAd?.show(this@PoopCalendarFragment.requireActivity())
-                                        }
-                                    } else {
-                                        mInterstitialCount = mInterstitialCount + 1
-                                        viewModel.saveInterstitialCount(mInterstitialCount)
-                                    }
-                                    parentFragmentManager.beginTransaction().apply {
-                                        add(
-                                            R.id.main_frame,
-                                            TheDayDetailFragment.newInstance(date.time)
-                                        )
-                                        addToBackStack(null)
-                                        commit()
-                                    }
-                                }
-                            }
-                        }
-                    )
-                    recyclerView.addOnItemTouchListener(itemTouchListener)
-                    recyclerView.adapter = PoopCalendarAdapter(scdate, poops)
+                    recyclerView.adapter = PoopCalendarAdapter(scdate,  poops,this@PoopCalendarFragment.requireContext())
                 }
             }
 
             // 曜日グリッドレイアウト更新
             lifecycleScope.launch(Dispatchers.Main) {
                 sccalenderRepository.dayOfWeekList.collect { week ->
-                    weekRecyclerView.layoutManager =
-                        GridLayoutManager(requireContext(), 7, RecyclerView.VERTICAL, false)
+                    weekRecyclerView.adapter = WeekAdapter(week, this@PoopCalendarFragment.requireContext())
+                }
+            }
+        }
+    }
+
+    /**
+     * グリッドレイアウトリサイクルビュー更新
+     * 1.月の日付
+     * 2.曜日
+     */
+    private fun updateRecycleView() {
+        poopViewModel.poops.observe(viewLifecycleOwner) { poops ->
+            // 月の日付更新
+            lifecycleScope.launch(Dispatchers.Main) {
+                sccalenderRepository.currentDates.collect { scdate ->
+                    recyclerView.adapter = PoopCalendarAdapter(scdate, poops, this@PoopCalendarFragment.requireContext())
+                }
+            }
+            // 曜日グリッドレイアウト更新
+            lifecycleScope.launch(Dispatchers.Main) {
+                sccalenderRepository.dayOfWeekList.collect { week ->
                     weekRecyclerView.adapter = WeekAdapter(week, this@PoopCalendarFragment.requireContext())
                 }
             }
@@ -247,6 +265,7 @@ class PoopCalendarFragment : Fragment(){
                 )
                 dialog.show(parentFragmentManager, "CalendarOutRangeNameDialog")
             }
+            updateHeaderYearAndMonth(view)
         }
 
         backMonthButton.setOnClickListener {
@@ -260,6 +279,7 @@ class PoopCalendarFragment : Fragment(){
                 )
                 dialog.show(parentFragmentManager, "CalendarOutRangeNameDialog")
             }
+            updateHeaderYearAndMonth(view)
         }
 
         todayButton.setOnClickListener {
@@ -281,7 +301,15 @@ class PoopCalendarFragment : Fragment(){
                 commit()
             }
         }
+        updateHeaderYearAndMonth(view)
+    }
 
+    /**
+     * ヘッダーの年月日更新
+     */
+    private fun updateHeaderYearAndMonth(view: View) {
+        val header: ConstraintLayout = view.findViewById(R.id.include_header)
+        val headerTitleButton: Button = header.findViewById(R.id.header_title_button)
         // ヘッダーの[2024年4月]テキスト更新
         lifecycleScope.launch(Dispatchers.Main) {
             sccalenderRepository.currentYearAndMonth.collect {
@@ -310,7 +338,7 @@ class PoopCalendarFragment : Fragment(){
 
         var adRequest = AdRequest.Builder().build()
 
-        InterstitialAd.load(this.requireContext(),"ca-app-pub-3940256099942544/1033173712", adRequest, object : InterstitialAdLoadCallback() {
+        InterstitialAd.load(this.requireContext(),getString(R.string.admob_Interstitial_id), adRequest, object : InterstitialAdLoadCallback() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
                 mInterstitialAd = null
             }
