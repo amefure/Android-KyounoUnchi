@@ -191,8 +191,8 @@ class PoopChartsFragment : Fragment() {
                 // 画像をリサイズ
                 val icon: Drawable? = ResourcesCompat.getDrawable(getResources(), R.drawable.noface_poop, null)
                 val bitmap = (icon as BitmapDrawable).bitmap
-                val drawable = BitmapDrawable(resources, Bitmap.createScaledBitmap(bitmap, 40, 40, true))
-                val dataEntry = Entry(value.first, value.second, drawable)
+                val resizeDrawable = BitmapDrawable(resources, Bitmap.createScaledBitmap(bitmap, 40, 40, true))
+                val dataEntry = Entry(value.first, value.second, resizeDrawable)
                 dataEntries.add(dataEntry)
             } else {
                 val dataEntry = Entry(value.first, value.second)
