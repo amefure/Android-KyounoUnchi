@@ -1,8 +1,12 @@
 package com.amefure.unchilog.Repository.SCCalender
 
 import android.os.Build
+import android.os.Bundle
+import android.util.Log
 import androidx.annotation.RequiresApi
+import com.amefure.unchilog.Model.Key.AppArgKey
 import com.amefure.unchilog.Model.SCCalender.SCDate
+import com.amefure.unchilog.View.InputPoopFragment
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.DayOfWeek
@@ -21,6 +25,10 @@ class SCCalenderRepository {
     companion object {
         private val START_YEAR = 2023
         private val START_MONTH = 1
+
+        // シングルトンインスタンス
+        @JvmStatic
+        public val shared = SCCalenderRepository()
     }
 
     /// 最初に表示したい曜日
@@ -45,6 +53,10 @@ class SCCalenderRepository {
     private var currentYearAndMonthIndex: Int = 0
 
     constructor(initWeek: DayOfWeek = DayOfWeek.SUNDAY) {
+        create(initWeek)
+    }
+
+    public fun updateInitWeek(initWeek: DayOfWeek) {
         create(initWeek)
     }
 

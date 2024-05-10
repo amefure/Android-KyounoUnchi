@@ -1,5 +1,6 @@
 package com.amefure.unchilog.View.Calendar
 
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +14,7 @@ import android.widget.Space
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -28,10 +30,12 @@ import com.amefure.unchilog.View.InputPoopFragment
 import com.amefure.unchilog.View.Calendar.RecycleViewSetting.PoopCalendarAdapter
 import com.amefure.unchilog.View.Calendar.RecycleViewSetting.TheDayTouchListener
 import com.amefure.unchilog.View.Calendar.RecycleViewSetting.WeekAdapter
+import com.amefure.unchilog.View.Charts.PoopChartsFragment
 import com.amefure.unchilog.View.Setting.SettingFragment
 import com.amefure.unchilog.View.TheDayDetail.TheDayDetailFragment
 import com.amefure.unchilog.ViewModel.PoopCalendarViewModel
 import com.amefure.unchilog.ViewModel.PoopViewModel
+import com.amefure.unchilog.ViewModel.SCCalendarViewModel
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
@@ -48,13 +52,11 @@ class PoopCalendarFragment : Fragment(){
     private var mInterstitialAd: InterstitialAd? = null
     private var mInterstitialCount: Int = 0
 
-    // カレンダーロジックリポジトリ
-    private lateinit var sccalenderRepository: SCCalenderRepository
-
     private var selectMode: Int = 0
 
     private val poopViewModel: PoopViewModel by viewModels()
     private val viewModel: PoopCalendarViewModel by viewModels()
+    private val calendarViewModel: SCCalendarViewModel by viewModels()
     private lateinit var recyclerView: RecyclerView
     private lateinit var weekRecyclerView: RecyclerView
 
@@ -74,13 +76,12 @@ class PoopCalendarFragment : Fragment(){
         recyclerView = view.findViewById(R.id.day_recycle_layout)
         weekRecyclerView = view.findViewById(R.id.week_recycle_layout)
 
-        sccalenderRepository = SCCalenderRepository()
         poopViewModel.fetchAllPoops()
 
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.observeInitWeek().collect { week ->
                 val dayOfWeek = week.toString().toDayOfWeek()
-                sccalenderRepository = SCCalenderRepository(dayOfWeek)
+                calendarViewModel.updateInitWeek(dayOfWeek)
                 updateRecycleView()
             }
         }
@@ -150,7 +151,6 @@ class PoopCalendarFragment : Fragment(){
                             mInterstitialCount = mInterstitialCount + 1
                             viewModel.saveInterstitialCount(mInterstitialCount)
                         }
-                        Log.e("インスタンス化","実行")
                         parentFragmentManager.beginTransaction().apply {
                             add(
                                 R.id.main_frame,
@@ -171,14 +171,14 @@ class PoopCalendarFragment : Fragment(){
         poopViewModel.poops.observe(viewLifecycleOwner) { poops ->
             // 月の日付更新
             lifecycleScope.launch(Dispatchers.Main) {
-                sccalenderRepository.currentDates.collect { scdate ->
+                calendarViewModel.currentDates.collect { scdate ->
                     recyclerView.adapter = PoopCalendarAdapter(scdate,  poops,this@PoopCalendarFragment.requireContext())
                 }
             }
 
             // 曜日グリッドレイアウト更新
             lifecycleScope.launch(Dispatchers.Main) {
-                sccalenderRepository.dayOfWeekList.collect { week ->
+                calendarViewModel.dayOfWeekList.collect { week ->
                     weekRecyclerView.adapter = WeekAdapter(week, this@PoopCalendarFragment.requireContext())
                 }
             }
@@ -194,13 +194,13 @@ class PoopCalendarFragment : Fragment(){
         poopViewModel.poops.observe(viewLifecycleOwner) { poops ->
             // 月の日付更新
             lifecycleScope.launch(Dispatchers.Main) {
-                sccalenderRepository.currentDates.collect { scdate ->
+                calendarViewModel.currentDates.collect { scdate ->
                     recyclerView.adapter = PoopCalendarAdapter(scdate, poops, this@PoopCalendarFragment.requireContext())
                 }
             }
             // 曜日グリッドレイアウト更新
             lifecycleScope.launch(Dispatchers.Main) {
-                sccalenderRepository.dayOfWeekList.collect { week ->
+                calendarViewModel.dayOfWeekList.collect { week ->
                     weekRecyclerView.adapter = WeekAdapter(week, this@PoopCalendarFragment.requireContext())
                 }
             }
@@ -246,7 +246,6 @@ class PoopCalendarFragment : Fragment(){
         val forwardMonthButton: ImageButton = header.findViewById(R.id.forward_month_button)
         val backMonthButton: ImageButton = header.findViewById(R.id.back_month_button)
         val headerSpace: Space = header.findViewById(R.id.header_space)
-        val headerTitleButton: Button = header.findViewById(R.id.header_title_button)
         val todayButton: ImageButton = header.findViewById(R.id.today_button)
 
         headerSpace.visibility = View.VISIBLE
@@ -255,7 +254,7 @@ class PoopCalendarFragment : Fragment(){
         todayButton.visibility = View.VISIBLE
 
         forwardMonthButton.setOnClickListener {
-            var result = sccalenderRepository.forwardMonth()
+            var result = calendarViewModel.forwardMonth()
             if (!result) {
                 val dialog = CustomNotifyDialogFragment.newInstance(
                     title = getString(R.string.dialog_title_notice),
@@ -269,7 +268,7 @@ class PoopCalendarFragment : Fragment(){
         }
 
         backMonthButton.setOnClickListener {
-            var result = sccalenderRepository.backMonth()
+            var result = calendarViewModel.backMonth()
             if (!result) {
                 val dialog = CustomNotifyDialogFragment.newInstance(
                     title = getString(R.string.dialog_title_notice),
@@ -286,12 +285,19 @@ class PoopCalendarFragment : Fragment(){
             val c = Calendar.getInstance()
             val year = c.get(Calendar.YEAR)
             val month = c.get(Calendar.MONTH) + 1
-            sccalenderRepository.moveYearAndMonthCalendar(year, month)
+            calendarViewModel.moveYearAndMonthCalendar(year, month)
         }
 
         val leftButton: ImageButton = header.findViewById(R.id.left_button)
-        leftButton.setImageDrawable(null)
-        leftButton.isEnabled = false
+        val graphIcon: Drawable? = ResourcesCompat.getDrawable(getResources(), R.drawable.button_graph, null)
+        leftButton.setImageDrawable(graphIcon)
+        leftButton.setOnClickListener {
+            parentFragmentManager.beginTransaction().apply {
+                add(R.id.main_frame, PoopChartsFragment())
+                addToBackStack(null)
+                commit()
+            }
+        }
 
         val rightButton: ImageButton = header.findViewById(R.id.right_button)
         rightButton.setOnClickListener {
@@ -312,7 +318,7 @@ class PoopCalendarFragment : Fragment(){
         val headerTitleButton: Button = header.findViewById(R.id.header_title_button)
         // ヘッダーの[2024年4月]テキスト更新
         lifecycleScope.launch(Dispatchers.Main) {
-            sccalenderRepository.currentYearAndMonth.collect {
+            calendarViewModel.currentYearAndMonth.collect {
                 it?.let {
                     headerTitleButton.text = it.fullname
                 }

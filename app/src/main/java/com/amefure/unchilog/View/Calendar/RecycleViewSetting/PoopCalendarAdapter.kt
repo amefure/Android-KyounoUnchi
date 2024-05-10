@@ -81,6 +81,4 @@ class PoopCalendarAdapter(
         val poopCnt: TextView = itemView.findViewById(R.id.poop_count)
         val poopLayout: ConstraintLayout = itemView.findViewById(R.id.poop_count_layout)
     }
-
-
 }
