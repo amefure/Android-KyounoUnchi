@@ -9,8 +9,9 @@
 
     <TextView
         android:id="@+id/week_label"
-        android:textSize="20sp"
+        android:textSize="14sp"
         android:text="月曜日"
+        android:gravity="center_vertical"
         android:textColor="@color/ex_text"
         android:layout_width="100dp"
         android:layout_height="30dp"/>
@@ -22,8 +23,9 @@
 
     <ImageView
         android:id="@+id/check_mark"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_gravity="center_vertical"
         android:layout_marginTop="5dp"
         android:src="@drawable/button_check"
         android:visibility="gone" />

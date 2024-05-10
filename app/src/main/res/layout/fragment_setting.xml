@@ -79,12 +79,13 @@
                     android:layout_weight="1" />
 
                 <ImageButton
-                    style="?android:attr/borderlessButtonStyle"
-                    android:layout_width="20dp"
-                    android:layout_height="match_parent"
                     android:id="@+id/init_week_button"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginEnd="20dp"
-                    android:src="@drawable/button_arrow_forward"/>
+                    android:src="@drawable/button_arrow_forward" />
             </LinearLayout>
 
 
@@ -138,10 +139,11 @@
                 <ImageButton
                     android:id="@+id/entry_mode_button"
                     style="?android:attr/borderlessButtonStyle"
-                    android:layout_width="20dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginEnd="20dp"
-                    android:src="@drawable/button_arrow_forward"/>
+                    android:src="@drawable/button_arrow_forward" />
             </LinearLayout>
 
             <LinearLayout
@@ -175,7 +177,7 @@
 
                 <Button
                     android:id="@+id/app_lock_button"
-                    android:layout_width="90dp"
+                    android:layout_width="75dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="20dp"
                     android:background="@drawable/app_lock_button_on_background"
