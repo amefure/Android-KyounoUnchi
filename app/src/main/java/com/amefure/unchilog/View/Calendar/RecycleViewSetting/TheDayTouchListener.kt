@@ -1,8 +1,5 @@
 package com.amefure.unchilog.View.Calendar.RecycleViewSetting
 
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -10,7 +7,7 @@ import com.amefure.unchilog.Model.SCCalender.SCDate
 
 class TheDayTouchListener: RecyclerView.SimpleOnItemTouchListener() {
 
-    private var isScroll = false
+    private var isScrollCount = 0
     private lateinit var listener: onTappedListener
     interface onTappedListener {
         fun onTapped(scdate: SCDate)
@@ -27,7 +24,7 @@ class TheDayTouchListener: RecyclerView.SimpleOnItemTouchListener() {
 
     override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
         // スクロール中は遷移させないようにする
-        if (e.action == MotionEvent.ACTION_UP && !isScroll) {
+        if (e.action == MotionEvent.ACTION_UP && isScrollCount <= 10) {
             // タッチされた位置のViewを取得
             val childView: View? = rv.findChildViewUnder(e.x, e.y)
             if (childView != null) {
@@ -43,12 +40,10 @@ class TheDayTouchListener: RecyclerView.SimpleOnItemTouchListener() {
                     }
                 }
             }
-        } else if(e.action == MotionEvent.AXIS_PRESSURE) {
-            isScroll = true
-            val handler = Handler(Looper.getMainLooper())
-            handler.postDelayed({
-                isScroll = false
-            }, 1000)
+        } else if(e.action == MotionEvent.ACTION_MOVE) {
+            isScrollCount += 1
+        } else if(e.action == 1) {
+            isScrollCount = 0
         }
         return false // 通常のタッチイベント処理を維持
     }
